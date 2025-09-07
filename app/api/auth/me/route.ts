@@ -15,6 +15,8 @@ async function getUserById(userId: string) {
     };
 }
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
     try {
         const cookieStore = await cookies();
