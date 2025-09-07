@@ -9,8 +9,8 @@ import "@worldcoin/mini-apps-ui-kit-react/styles.css";
 const sora = Sora({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "WLD101",
-  description: "Template mini app for Worldcoin",
+  title: "RaffleTime",
+  description: "WorldID-Powered Zero-Loss On-Chain Sweepstakes Platform",
 };
 
 export default function RootLayout({
