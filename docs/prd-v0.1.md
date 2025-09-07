@@ -109,5 +109,3 @@ flowchart TD
 2. NumWinners can be percentage based instead of absolute, i.e., 10% of unique participants win prizes.  
 3. Tiered prizes, i.e., the top winner wins 2x more than the 2nd winner.   
 4. Tiered prizes for multiple winning beneficiaries
-
-[image1]
