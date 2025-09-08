@@ -17,6 +17,10 @@ const customJestConfig = {
   testEnvironment: 'jest-environment-jsdom',
   // Mock Next.js environment variables
   setupFiles: ['<rootDir>/jest.env.js'],
+  // Transform ES modules from node_modules
+  transformIgnorePatterns: [
+    'node_modules/(?!(@worldcoin/mini-apps-ui-kit-react)/)',
+  ],
 }
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async

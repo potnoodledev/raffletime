@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Sora } from "next/font/google";
 import "./globals.css";
 import MiniKitProvider from "@/components/minikit-provider";
+import { MockModeProvider } from "@/components/providers/MockModeProvider";
 import dynamic from "next/dynamic";
 import NextAuthProvider from "@/components/next-auth-provider";
 import "@worldcoin/mini-apps-ui-kit-react/styles.css";
@@ -37,9 +38,11 @@ export default function RootLayout({
       <body className={sora.className}>
         <NextAuthProvider>
           <ErudaProvider>
-            <MiniKitProvider>
-              {children}
-            </MiniKitProvider>
+            <MockModeProvider>
+              <MiniKitProvider>
+                {children}
+              </MiniKitProvider>
+            </MockModeProvider>
           </ErudaProvider>
         </NextAuthProvider>
       </body>
