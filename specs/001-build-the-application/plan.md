@@ -1,22 +1,24 @@
-# Implementation Plan: RaffleTime WorldID-Powered Sweepstakes Platform
+# Implementation Plan: [FEATURE]
 
-**Branch**: `001-build-the-application` | **Date**: 2025-09-08 | **Spec**: [spec.md](./spec.md)
-**Input**: Feature specification from `/specs/001-build-the-application/spec.md`
+**Branch**: `[###-feature-name]` | **Date**: [DATE] | **Spec**: [link]
+**Input**: Feature specification from `/specs/[###-feature-name]/spec.md`
 
 ## Execution Flow (/plan command scope)
 ```
 1. Load feature spec from Input path
-   → Feature spec loaded successfully
+   → If not found: ERROR "No feature spec at {path}"
 2. Fill Technical Context (scan for NEEDS CLARIFICATION)
-   → Detected existing Next.js project with WorldCoin integration
-   → Set Structure Decision based on project type (web application)
+   → Detect Project Type from context (web=frontend+backend, mobile=app+api)
+   → Set Structure Decision based on project type
 3. Evaluate Constitution Check section below
-   → Constitution template is placeholder, applying general principles
+   → If violations exist: Document in Complexity Tracking
+   → If no justification possible: ERROR "Simplify approach first"
    → Update Progress Tracking: Initial Constitution Check
 4. Execute Phase 0 → research.md
-   → No NEEDS CLARIFICATION remain in spec
-5. Execute Phase 1 → contracts, data-model.md, quickstart.md, CLAUDE.md
+   → If NEEDS CLARIFICATION remain: ERROR "Resolve unknowns"
+5. Execute Phase 1 → contracts, data-model.md, quickstart.md, agent-specific template file (e.g., `CLAUDE.md` for Claude Code, `.github/copilot-instructions.md` for GitHub Copilot, or `GEMINI.md` for Gemini CLI).
 6. Re-evaluate Constitution Check section
+   → If new violations: Refactor design, return to Phase 1
    → Update Progress Tracking: Post-Design Constitution Check
 7. Plan Phase 2 → Describe task generation approach (DO NOT create tasks.md)
 8. STOP - Ready for /tasks command
@@ -27,60 +29,57 @@
 - Phase 3-4: Implementation execution (manual or via tools)
 
 ## Summary
-Primary requirement: Build complete RaffleTime WorldID-powered sweepstakes platform with WLD token payments, soulbound NFT tickets, and charity beneficiary voting. Technical approach leverages existing Next.js + WorldCoin MiniKit foundation, extending with smart contracts, database persistence, and real payment processing.
+[Extract from feature spec: primary requirement + technical approach from research]
 
 ## Technical Context
-**Language/Version**: TypeScript 5, Next.js 14.2.6  
-**Primary Dependencies**: WorldCoin MiniKit SDK 1.6.1, NextAuth 4.24.7, Viem 2.23.5, Tailwind CSS  
-**Storage**: PostgreSQL with Prisma ORM (to be implemented)  
-**Testing**: Jest + React Testing Library (to be implemented)  
-**Target Platform**: Web application (responsive design for mobile/desktop)
-**Project Type**: web - Next.js frontend with API routes backend  
-**Performance Goals**: <200ms response times, handle 1000+ concurrent users, <100MB memory per raffle  
-**Constraints**: WorldID verification required, WLD-only payments, soulbound NFTs, immutable raffle rules  
-**Scale/Scope**: 10k+ users, 100+ concurrent raffles, real-time prize pools up to 100k WLD
+**Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]  
+**Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]  
+**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]  
+**Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]  
+**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]
+**Project Type**: [single/web/mobile - determines source structure]  
+**Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]  
+**Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]  
+**Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
 
 ## Constitution Check
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
 **Simplicity**:
-- Projects: 1 (Next.js app with API routes - no separate backend)
-- Using framework directly? (Yes - Next.js without wrappers)
-- Single data model? (Yes - shared types between frontend/backend)
-- Avoiding patterns? (No Repository pattern - direct Prisma usage)
+- Projects: [#] (max 3 - e.g., api, cli, tests)
+- Using framework directly? (no wrapper classes)
+- Single data model? (no DTOs unless serialization differs)
+- Avoiding patterns? (no Repository/UoW without proven need)
 
 **Architecture**:
-- EVERY feature as library? (Smart contracts as npm libraries, UI components modular)
-- Libraries listed: 
-  - raffle-contracts: Smart contract logic for raffles and NFTs
-  - worldid-verification: WorldID proof verification utilities
-  - payment-processing: WLD token transfer handling
-- CLI per library: (Smart contract deployment/management CLIs)
-- Library docs: llms.txt format planned for each library
+- EVERY feature as library? (no direct app code)
+- Libraries listed: [name + purpose for each]
+- CLI per library: [commands with --help/--version/--format]
+- Library docs: llms.txt format planned?
 
 **Testing (NON-NEGOTIABLE)**:
-- RED-GREEN-Refactor cycle enforced? (Tests written first for all new features)
-- Git commits show tests before implementation? (Will enforce in tasks)
-- Order: Contract→Integration→E2E→Unit strictly followed? (Yes)
-- Real dependencies used? (Real blockchain networks, actual WLD tokens in staging)
-- Integration tests for: Smart contract interactions, WorldID verification, payment flows
+- RED-GREEN-Refactor cycle enforced? (test MUST fail first)
+- Git commits show tests before implementation?
+- Order: Contract→Integration→E2E→Unit strictly followed?
+- Real dependencies used? (actual DBs, not mocks)
+- Integration tests for: new libraries, contract changes, shared schemas?
 - FORBIDDEN: Implementation before test, skipping RED phase
 
 **Observability**:
-- Structured logging included? (Winston with JSON format)
-- Frontend logs → backend? (Error boundary + API logging)
-- Error context sufficient? (Full stack traces + user context)
+- Structured logging included?
+- Frontend logs → backend? (unified stream)
+- Error context sufficient?
 
 **Versioning**:
-- Version number assigned? (1.0.0 for MVP)
-- BUILD increments on every change? (Automated via CI/CD)
-- Breaking changes handled? (Smart contract upgrade patterns)
+- Version number assigned? (MAJOR.MINOR.BUILD)
+- BUILD increments on every change?
+- Breaking changes handled? (parallel tests, migration plan)
 
 ## Project Structure
 
 ### Documentation (this feature)
 ```
-specs/001-build-the-application/
+specs/[###-feature]/
 ├── plan.md              # This file (/plan command output)
 ├── research.md          # Phase 0 output (/plan command)
 ├── data-model.md        # Phase 1 output (/plan command)
@@ -91,141 +90,111 @@ specs/001-build-the-application/
 
 ### Source Code (repository root)
 ```
-# Option 2: Web application (existing Next.js structure extended)
-app/                     # Next.js App Router
-├── api/                 # API routes (existing + new)
-├── raffles/             # Raffle pages
-├── profile/             # User profile pages
-└── admin/               # Admin dashboard
+# Option 1: Single project (DEFAULT)
+src/
+├── models/
+├── services/
+├── cli/
+└── lib/
 
-components/              # React components (extensive existing set)
-├── RaffleList/          # Existing: raffle browsing
-├── RaffleDetails/       # Existing: detailed raffle view
-├── CreateRaffle/        # Existing: raffle creation form
-├── Login/               # Existing: WorldID authentication
-├── TicketPurchase/      # Existing: ticket buying interface
-└── [new components]     # Prize claiming, NFT display, admin tools
+tests/
+├── contract/
+├── integration/
+└── unit/
 
-lib/                     # Utilities and services
-├── contracts/           # Smart contract interactions (NEW)
-├── database/            # Database schemas and operations (NEW)
-├── worldid/             # WorldID verification logic (extend existing)
-├── payments/            # WLD token processing (NEW)
-└── mock-data.ts         # Existing mock data (to be replaced)
+# Option 2: Web application (when "frontend" + "backend" detected)
+backend/
+├── src/
+│   ├── models/
+│   ├── services/
+│   └── api/
+└── tests/
 
-types/                   # TypeScript definitions
-└── raffle.ts            # Existing: comprehensive raffle types
+frontend/
+├── src/
+│   ├── components/
+│   ├── pages/
+│   └── services/
+└── tests/
 
-tests/                   # Testing suite (NEW)
-├── contracts/           # Smart contract tests
-├── integration/         # API and component integration tests
-├── e2e/                 # End-to-end user journey tests
-└── unit/                # Component and utility unit tests
+# Option 3: Mobile + API (when "iOS/Android" detected)
+api/
+└── [same as backend above]
+
+ios/ or android/
+└── [platform-specific structure]
 ```
 
-**Structure Decision**: Web application (Option 2) - extending existing Next.js structure
+**Structure Decision**: [DEFAULT to Option 1 unless Technical Context indicates web/mobile app]
 
 ## Phase 0: Outline & Research
+1. **Extract unknowns from Technical Context** above:
+   - For each NEEDS CLARIFICATION → research task
+   - For each dependency → best practices task
+   - For each integration → patterns task
 
-Based on the codebase analysis, existing Next.js + WorldCoin foundation eliminates most unknowns. Research focuses on blockchain integration and production readiness:
+2. **Generate and dispatch research agents**:
+   ```
+   For each unknown in Technical Context:
+     Task: "Research {unknown} for {feature context}"
+   For each technology choice:
+     Task: "Find best practices for {tech} in {domain}"
+   ```
 
-1. **Smart Contract Architecture**:
-   - Research: Ethereum smart contract patterns for raffles
-   - Research: Soulbound NFT implementation (ERC-721 extensions)
-   - Research: Verifiable random number generation for winner selection
+3. **Consolidate findings** in `research.md` using format:
+   - Decision: [what was chosen]
+   - Rationale: [why chosen]
+   - Alternatives considered: [what else evaluated]
 
-2. **Database Design**:
-   - Research: PostgreSQL schema optimization for high-volume transactions
-   - Research: Real-time data synchronization patterns
-   - Research: Database indexing strategies for raffle queries
-
-3. **Payment Processing**:
-   - Research: WorldCoin WLD token integration patterns
-   - Research: Transaction failure handling and retry logic
-   - Research: Multi-signature wallet security for prize pools
-
-**Output**: research.md with technical decisions and architecture patterns
+**Output**: research.md with all NEEDS CLARIFICATION resolved
 
 ## Phase 1: Design & Contracts
 *Prerequisites: research.md complete*
 
 1. **Extract entities from feature spec** → `data-model.md`:
-   - Extend existing Raffle, Ticket, User types with database mappings
-   - Add Prize Distribution, Beneficiary Vote entities
-   - Define state machine for raffle lifecycle transitions
-   - Specify audit trail for all transactions
+   - Entity name, fields, relationships
+   - Validation rules from requirements
+   - State transitions if applicable
 
 2. **Generate API contracts** from functional requirements:
-   - Extend existing API routes with blockchain operations
-   - Add smart contract interaction endpoints
-   - Define WebSocket events for real-time updates
-   - Output OpenAPI specification to `/contracts/api-spec.yaml`
+   - For each user action → endpoint
+   - Use standard REST/GraphQL patterns
+   - Output OpenAPI/GraphQL schema to `/contracts/`
 
-3. **Generate smart contract interfaces**:
-   - Raffle management contract specification
-   - Soulbound NFT ticket contract specification
-   - Prize distribution contract specification
-   - Output Solidity interfaces to `/contracts/solidity/`
+3. **Generate contract tests** from contracts:
+   - One test file per endpoint
+   - Assert request/response schemas
+   - Tests must fail (no implementation yet)
 
-4. **Generate contract tests** from contracts:
-   - Smart contract unit tests (Hardhat/Foundry)
-   - API endpoint contract tests
-   - Integration test scenarios for user flows
-   - Tests must fail initially (TDD approach)
+4. **Extract test scenarios** from user stories:
+   - Each story → integration test scenario
+   - Quickstart test = story validation steps
 
-5. **Extract test scenarios** from user stories:
-   - Complete raffle lifecycle integration tests
-   - WorldID verification flow tests
-   - Payment processing integration tests
-   - Prize claiming and refund scenarios
+5. **Update agent file incrementally** (O(1) operation):
+   - Run `/scripts/update-agent-context.sh [claude|gemini|copilot]` for your AI assistant
+   - If exists: Add only NEW tech from current plan
+   - Preserve manual additions between markers
+   - Update recent changes (keep last 3)
+   - Keep under 150 lines for token efficiency
+   - Output to repository root
 
-6. **Update CLAUDE.md incrementally**:
-   - Add smart contract development context
-   - Include blockchain integration patterns
-   - Document testing requirements and TDD approach
-   - Keep focused on new implementation areas
-
-**Output**: data-model.md, /contracts/*, failing tests, quickstart.md, CLAUDE.md
+**Output**: data-model.md, /contracts/*, failing tests, quickstart.md, agent-specific file
 
 ## Phase 2: Task Planning Approach
 *This section describes what the /tasks command will do - DO NOT execute during /plan*
 
 **Task Generation Strategy**:
-- Build on existing UI foundation - enhance rather than rebuild
-- Prioritize backend/blockchain gaps identified in codebase analysis
-- Group related tasks for efficient development workflow
-- Maintain TDD discipline throughout implementation
-
-**Task Categories**:
-1. **Database Layer** (5-7 tasks):
-   - Prisma schema definition
-   - Database migration scripts  
-   - Data access layer implementation
-   - Migration from mock data
-
-2. **Smart Contracts** (8-10 tasks):
-   - Contract development and testing
-   - Deployment scripts and configuration
-   - Frontend integration with contracts
-   - Transaction handling and error recovery
-
-3. **Payment Processing** (4-6 tasks):
-   - WLD token integration
-   - Payment flow implementation
-   - Transaction confirmation handling
-   - Refund mechanism development
-
-4. **UI Enhancement** (6-8 tasks):
-   - Connect existing UI to real data
-   - Add missing admin interfaces
-   - Implement real-time updates
-   - Prize claiming interface
+- Load `/templates/tasks-template.md` as base
+- Generate tasks from Phase 1 design docs (contracts, data model, quickstart)
+- Each contract → contract test task [P]
+- Each entity → model creation task [P] 
+- Each user story → integration test task
+- Implementation tasks to make tests pass
 
 **Ordering Strategy**:
-- Phase A: Database + Smart Contracts (foundation)
-- Phase B: Payment Processing + Backend Integration  
-- Phase C: UI Connection + Real-time Features
-- Phase D: Testing + Production Readiness
+- TDD order: Tests before implementation 
+- Dependency order: Models before services before UI
+- Mark [P] for parallel execution (independent files)
 
 **Estimated Output**: 25-30 numbered, ordered tasks in tasks.md
 
@@ -239,28 +208,30 @@ Based on the codebase analysis, existing Next.js + WorldCoin foundation eliminat
 **Phase 5**: Validation (run tests, execute quickstart.md, performance validation)
 
 ## Complexity Tracking
-*No constitutional violations identified - existing architecture follows simplicity principles*
+*Fill ONLY if Constitution Check has violations that must be justified*
 
 | Violation | Why Needed | Simpler Alternative Rejected Because |
 |-----------|------------|-------------------------------------|
-| None identified | - | - |
+| [e.g., 4th project] | [current need] | [why 3 projects insufficient] |
+| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient] |
+
 
 ## Progress Tracking
 *This checklist is updated during execution flow*
 
 **Phase Status**:
-- [x] Phase 0: Research complete (/plan command)
-- [x] Phase 1: Design complete (/plan command)
-- [x] Phase 2: Task planning approach defined (/plan command - describe approach only)
+- [ ] Phase 0: Research complete (/plan command)
+- [ ] Phase 1: Design complete (/plan command)
+- [ ] Phase 2: Task planning complete (/plan command - describe approach only)
 - [ ] Phase 3: Tasks generated (/tasks command)
 - [ ] Phase 4: Implementation complete
 - [ ] Phase 5: Validation passed
 
 **Gate Status**:
-- [x] Initial Constitution Check: PASS
-- [x] Post-Design Constitution Check: PASS
-- [x] All NEEDS CLARIFICATION resolved (none in spec)
-- [x] Complexity deviations documented (none identified)
+- [ ] Initial Constitution Check: PASS
+- [ ] Post-Design Constitution Check: PASS
+- [ ] All NEEDS CLARIFICATION resolved
+- [ ] Complexity deviations documented
 
 ---
-*Based on Constitution template - See `/memory/constitution.md`*
+*Based on Constitution v2.1.1 - See `/memory/constitution.md`*

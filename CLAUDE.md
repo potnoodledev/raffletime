@@ -87,12 +87,13 @@ prisma/               # Database schema and migrations (NEW)
 
 ## Current Task Context
 Working on Spec-Driven Development lifecycle:
-- ✅ Specification complete (`specs/001-build-the-application/spec.md`)
-- ✅ Planning complete (`specs/001-build-the-application/plan.md`)
-- ✅ Research complete (`specs/001-build-the-application/research.md`)
-- ✅ Data model designed (`specs/001-build-the-application/data-model.md`)
-- ✅ API contracts defined (`specs/001-build-the-application/contracts/`)
-- ⏳ Ready for task generation via `/tasks` command
+- ✅ Main platform specification complete (`specs/001-build-the-application/`)
+  - Tasks T001-T004 completed: Database infrastructure setup
+  - PostgreSQL + Prisma schema deployed with seed data
+- ✅ NEW: Frontend mock mode feature (`specs/002-frontend-mock-mode/`)
+  - Enables UI testing without WorldCoin app dependency
+  - Environment-based activation for development only
+  - Mock user personas and simulated MiniKit responses
 
 ## Implementation Priority Order
 1. **Database Setup**: Implement Prisma schema and migrations

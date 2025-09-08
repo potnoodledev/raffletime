@@ -35,10 +35,10 @@
 ## Phase 3.1: Setup & Infrastructure
 
 ### Database and ORM Setup
-- [ ] **T001** Install and configure PostgreSQL with Prisma ORM dependencies
-- [ ] **T002** Create Prisma schema at `prisma/schema.prisma` based on data-model.md design  
-- [ ] **T003** Generate Prisma client and run initial database migration
-- [ ] **T004** Create initial beneficiaries seed data (Red Cross, Oxfam, UNICEF) in `prisma/seed.ts`
+- [x] **T001** Install and configure PostgreSQL with Prisma ORM dependencies
+- [x] **T002** Create Prisma schema at `prisma/schema.prisma` based on data-model.md design  
+- [x] **T003** Generate Prisma client and run initial database migration
+- [x] **T004** Create initial beneficiaries seed data (Red Cross, Oxfam, UNICEF) in `prisma/seed.ts`
 
 ### Smart Contract Development Setup
 - [ ] **T005** Initialize Hardhat framework with TypeScript configuration in `contracts/` directory
