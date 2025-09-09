@@ -4,12 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:ci": "jest --ci --coverage",
+    "postinstall": "prisma generate",
     "db:seed": "tsx prisma/seed.ts",
     "db:reset": "npx prisma db push --force-reset && npm run db:seed"
   },
