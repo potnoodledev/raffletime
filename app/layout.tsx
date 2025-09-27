@@ -4,6 +4,7 @@ import "./globals.css";
 import MiniKitProvider from "@/components/minikit-provider";
 import { MockModeProvider } from "@/components/providers/MockModeProvider";
 import { LaunchModeProvider } from "@/components/providers/LaunchModeProvider";
+import { DebugButton } from "@/components/DebugButton";
 import dynamic from "next/dynamic";
 import NextAuthProvider from "@/components/next-auth-provider";
 import "@worldcoin/mini-apps-ui-kit-react/styles.css";
@@ -43,6 +44,7 @@ export default function RootLayout({
               <MockModeProvider>
                 <MiniKitProvider>
                   {children}
+                  <DebugButton />
                 </MiniKitProvider>
               </MockModeProvider>
             </LaunchModeProvider>
