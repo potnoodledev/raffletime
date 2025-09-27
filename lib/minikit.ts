@@ -47,15 +47,15 @@ export const MiniKit = {
   get isInstalled() {
     return getMiniKit().isInstalled;
   },
-  
+
   get user() {
     return getMiniKit().user;
   },
-  
+
   get commandsAsync() {
     return getMiniKit().commandsAsync;
   },
-  
+
   install: () => {
     const kit = getMiniKit();
     if ('install' in kit) {
@@ -63,6 +63,9 @@ export const MiniKit = {
     }
   }
 };
+
+// Export getMiniKit for direct access in hooks
+export { getMiniKit };
 
 // Re-export types for convenience
 export type { WalletAuthInput } from "@worldcoin/minikit-js";

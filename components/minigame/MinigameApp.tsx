@@ -3,6 +3,9 @@
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import type { GameScreen as GameScreenType } from '@/types/minigame';
+import { useWalletConnection } from '@/lib/hooks/useWalletConnection';
+import { WalletStatusHeader } from './WalletStatusHeader';
+import { MockUserSwitcher } from './MockUserSwitcher';
 
 // Static imports for immediate components
 import { Tutorial } from './Tutorial';
@@ -19,6 +22,17 @@ const GameScreen = dynamic(
 export function MinigameApp() {
   const [currentScreen, setCurrentScreen] = useState<GameScreenType>('tutorial');
   const [depositAmount, setDepositAmount] = useState(0);
+
+  // Wallet connection state
+  const { isConnected, disconnect } = useWalletConnection({
+    autoConnect: true,
+    onDisconnect: () => {
+      // Return to home screen when wallet disconnects
+      if (currentScreen === 'game' || currentScreen === 'deposit') {
+        setCurrentScreen('home');
+      }
+    },
+  });
 
   const handleTutorialComplete = () => {
     setCurrentScreen('home');
@@ -53,6 +67,21 @@ export function MinigameApp() {
   return (
     <ErrorBoundary>
       <div className="size-full min-h-screen">
+        {/* Global wallet status header for connected state */}
+        {isConnected && currentScreen !== 'tutorial' && (
+          <WalletStatusHeader
+            position="top-right"
+            showBalance={true}
+            showStatus={true}
+            onDisconnect={() => {
+              // Return to home screen when wallet disconnects
+              if (currentScreen === 'game' || currentScreen === 'deposit') {
+                setCurrentScreen('home');
+              }
+            }}
+          />
+        )}
+
         {currentScreen === 'tutorial' && (
           <Tutorial onComplete={handleTutorialComplete} />
         )}
@@ -78,6 +107,12 @@ export function MinigameApp() {
             onPlayAgain={handlePlayAgain}
           />
         )}
+
+        {/* Mock User Switcher for development */}
+        <MockUserSwitcher
+          position="bottom-left"
+          compact={false}
+        />
       </div>
     </ErrorBoundary>
   );
