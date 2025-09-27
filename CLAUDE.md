@@ -90,10 +90,14 @@ Working on Spec-Driven Development lifecycle:
 - ✅ Main platform specification complete (`specs/001-build-the-application/`)
   - Tasks T001-T004 completed: Database infrastructure setup
   - PostgreSQL + Prisma schema deployed with seed data
-- ✅ NEW: Frontend mock mode feature (`specs/002-frontend-mock-mode/`)
+- ✅ Frontend mock mode feature (`specs/002-frontend-mock-mode/`)
   - Enables UI testing without WorldCoin app dependency
   - Environment-based activation for development only
   - Mock user personas and simulated MiniKit responses
+- 🚧 Pre-Launch Minigame Mode (`specs/003-when-app-is/`)
+  - Diamond-hands minigame displays when NEXT_PUBLIC_APP_LAUNCHED=false
+  - Ported from React/Vite to Next.js with Framer Motion
+  - Client-side only, no persistence required
 
 ## Implementation Priority Order
 1. **Database Setup**: Implement Prisma schema and migrations
