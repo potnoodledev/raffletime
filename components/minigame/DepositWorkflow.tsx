@@ -257,12 +257,6 @@ export function DepositWorkflow({ onComplete, onBack }: DepositWorkflowProps) {
                 </div>
               )}
 
-              {/* Wallet status messages */}
-              {!isConnected && (
-                <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 text-sm">
-                  Connect your wallet to start playing
-                </div>
-              )}
 
               {/* Enhanced validation messages */}
               {validationMessage && (

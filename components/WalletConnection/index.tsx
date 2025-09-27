@@ -229,15 +229,29 @@ export const WalletConnection = ({
         )}
 
         {!isConnected ? (
-          <Button
-            onClick={handleConnect}
-            disabled={isConnecting}
-            size="sm"
-            variant="primary"
-            aria-describedby={error ? "wallet-error" : undefined}
-          >
-            {isConnecting ? "..." : "Connect"}
-          </Button>
+          <div className={isConnecting ? "connecting-button-compact" : ""}>
+            <Button
+              onClick={handleConnect}
+              disabled={isConnecting}
+              size="sm"
+              variant="primary"
+              aria-describedby={error ? "wallet-error" : undefined}
+              className={isConnecting ? "!bg-yellow-500 !border-yellow-600 hover:!bg-yellow-600" : ""}
+            >
+              {isConnecting ? "..." : "Connect"}
+            </Button>
+            {isConnecting && (
+              <style jsx global>{`
+                .connecting-button-compact button {
+                  background-color: rgb(234 179 8) !important;
+                  border-color: rgb(202 138 4) !important;
+                }
+                .connecting-button-compact button:hover {
+                  background-color: rgb(202 138 4) !important;
+                }
+              `}</style>
+            )}
+          </div>
         ) : (
           <div className="flex items-center space-x-1">
             {user?.profilePicture && (
@@ -283,34 +297,6 @@ export const WalletConnection = ({
         </div>
       )}
 
-      {/* Connection Status */}
-      <div
-        className="flex items-center space-x-2"
-        role="status"
-        aria-live="polite"
-      >
-        <div
-          className={`w-2 h-2 rounded-full ${
-            status === 'connected'
-              ? 'bg-green-500'
-              : status === 'connecting'
-              ? 'bg-yellow-500 animate-pulse'
-              : status === 'error'
-              ? 'bg-red-500'
-              : 'bg-gray-400'
-          }`}
-          role="status"
-          aria-label={`Connection status: ${getConnectionStatusText(status)}`}
-        />
-        <span className={`text-sm ${getConnectionStatusColor(status)}`}>
-          {getConnectionStatusText(status)}
-        </span>
-        {isConnected && session && isSessionValid && (
-          <span className="text-xs text-gray-500">
-            (Session Active)
-          </span>
-        )}
-      </div>
 
       {/* Error Display */}
       {error && (
@@ -337,16 +323,30 @@ export const WalletConnection = ({
 
       {/* Connection Button or User Info */}
       {!isConnected ? (
-        <Button
-          onClick={handleConnect}
-          disabled={isConnecting}
-          size="lg"
-          variant="primary"
-          aria-describedby={error ? "wallet-error" : undefined}
-          aria-expanded="false"
-        >
-          {isConnecting ? "Connecting..." : "Connect Wallet"}
-        </Button>
+        <div className={isConnecting ? "connecting-button-wrapper" : ""}>
+          <Button
+            onClick={handleConnect}
+            disabled={isConnecting}
+            size="lg"
+            variant="primary"
+            aria-describedby={error ? "wallet-error" : undefined}
+            aria-expanded="false"
+            className={isConnecting ? "!bg-yellow-500 !border-yellow-600 hover:!bg-yellow-600" : ""}
+          >
+            {isConnecting ? "Connecting..." : "Connect Wallet"}
+          </Button>
+          {isConnecting && (
+            <style jsx global>{`
+              .connecting-button-wrapper button {
+                background-color: rgb(234 179 8) !important;
+                border-color: rgb(202 138 4) !important;
+              }
+              .connecting-button-wrapper button:hover {
+                background-color: rgb(202 138 4) !important;
+              }
+            `}</style>
+          )}
+        </div>
       ) : (
         <div className="flex flex-col items-center space-y-3">
           {/* User Profile */}
@@ -437,55 +437,19 @@ export const WalletConnection = ({
             );
           })()}
 
-          {/* Action Buttons */}
-          <div className="flex space-x-2" role="group" aria-label="Wallet actions">
-            <Button
-              onClick={handleRefresh}
-              variant="secondary"
-              size="sm"
-              disabled={isConnecting}
-              aria-label="Refresh wallet connection and balance"
-            >
-              {isConnecting ? "Refreshing..." : "Refresh"}
-            </Button>
-
-            <Button
-              onClick={handleDisconnect}
-              variant="secondary"
-              size="sm"
-              disabled={isConnecting}
-              aria-label="Disconnect from wallet"
-            >
-              Disconnect
-            </Button>
-          </div>
+          {/* Disconnect Button Only */}
+          <Button
+            onClick={handleDisconnect}
+            variant="secondary"
+            size="sm"
+            disabled={isConnecting}
+            aria-label="Disconnect from wallet"
+          >
+            Disconnect
+          </Button>
         </div>
       )}
 
-      {/* Connection Details (Debug) */}
-      {process.env.NODE_ENV === 'development' && isConnected && connection && (
-        <details className="w-full max-w-sm text-xs text-gray-500">
-          <summary className="cursor-pointer">Debug Info</summary>
-          <div className="mt-2 p-2 bg-gray-50 rounded text-left">
-            <div>Status: {status}</div>
-            <div>Address: {connection.address}</div>
-            <div>Connected: {new Date(connection.connectionTimestamp).toLocaleTimeString()}</div>
-            <div>Last Refresh: {new Date(connection.lastRefreshTimestamp).toLocaleTimeString()}</div>
-            {session && (
-              <>
-                <div>Session ID: {session.sessionId.slice(0, 12)}...</div>
-                <div>Session Valid: {isSessionValid ? 'Yes' : 'No'}</div>
-              </>
-            )}
-            {balance && (
-              <>
-                <div>Balance Status: {balanceStatus}</div>
-                <div>Balance Updated: {balance.lastUpdated.toLocaleTimeString()}</div>
-              </>
-            )}
-          </div>
-        </details>
-      )}
     </div>
   );
 };
