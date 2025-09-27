@@ -31,3 +31,29 @@ body {
     text-wrap: balance;
   }
 }
+
+/* Custom font for minigame */
+@import url('https://fonts.googleapis.com/css2?family=Aubrey&display=swap');
+
+/* Sparkle animations for diamond effect */
+@keyframes sparkle1 {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0.5) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1) rotate(180deg);
+  }
+}
+
+@keyframes sparkle2 {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0.5) rotate(45deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1) rotate(225deg);
+  }
+}

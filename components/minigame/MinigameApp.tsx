@@ -11,6 +11,7 @@ import { MockUserSwitcher } from './MockUserSwitcher';
 import { Tutorial } from './Tutorial';
 import { HomeScreen } from './HomeScreen';
 import { DepositWorkflow } from './DepositWorkflow';
+import { HelpScreen } from './HelpScreen';
 import { ErrorBoundary } from './ErrorBoundary';
 
 // Dynamic import for GameScreen to avoid SSR issues with Framer Motion
@@ -44,6 +45,10 @@ export function MinigameApp() {
 
   const handleShowTutorial = () => {
     setCurrentScreen('tutorial');
+  };
+
+  const handleShowHelp = () => {
+    setCurrentScreen('help');
   };
 
   const handleDepositComplete = (amount: number) => {
@@ -90,7 +95,12 @@ export function MinigameApp() {
           <HomeScreen
             onStartDeposit={handleStartDeposit}
             onShowTutorial={handleShowTutorial}
+            onShowHelp={handleShowHelp}
           />
+        )}
+
+        {currentScreen === 'help' && (
+          <HelpScreen onBack={handleBackToHome} />
         )}
 
         {currentScreen === 'deposit' && (

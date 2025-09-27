@@ -6,7 +6,7 @@ export interface LaunchConfiguration {
   checkedAt: Date;               // When config was last checked
 }
 
-export type GameScreen = 'tutorial' | 'home' | 'deposit' | 'game' | 'result';
+export type GameScreen = 'tutorial' | 'home' | 'deposit' | 'game' | 'result' | 'help';
 export type GameStatus = 'initializing' | 'active' | 'countdown' | 'ended';
 
 export interface PricePoint {
@@ -61,6 +61,7 @@ export interface TutorialProps {
 export interface HomeScreenProps {
   onStartDeposit: () => void;
   onShowTutorial: () => void;
+  onShowHelp: () => void;
 }
 
 export interface DepositWorkflowProps {
