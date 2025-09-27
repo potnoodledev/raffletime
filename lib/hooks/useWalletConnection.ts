@@ -85,21 +85,34 @@ export function useWalletConnection(options: UseWalletConnectionOptions = {}): U
 
   // Connect to wallet
   const connect = useCallback(async () => {
+    console.log('🔍 [useWalletConnection] Connect function called');
+
     if (connectingRef.current) {
+      console.log('🔍 [useWalletConnection] Already connecting, skipping');
       return;
     }
 
     try {
+      console.log('🔍 [useWalletConnection] Starting connection process');
       connectingRef.current = true;
       setStatus('connecting');
       setError(null);
 
+      console.log('🔍 [useWalletConnection] isMockMode:', isMockMode);
+      console.log('🔍 [useWalletConnection] MiniKit object:', MiniKit);
+      console.log('🔍 [useWalletConnection] MiniKit.commandsAsync:', MiniKit.commandsAsync);
+      console.log('🔍 [useWalletConnection] MiniKit.commandsAsync.walletAuth:', MiniKit.commandsAsync?.walletAuth);
+
       if (isMockMode) {
+        console.log('🔍 [useWalletConnection] Using mock mode connection');
         // Mock mode connection (same as Login component)
         const mockUserId = localStorage.getItem('mockUserId') || 'active-user';
+        console.log('🔍 [useWalletConnection] Mock user ID:', mockUserId);
+
         const mockUser = await simulateMockWalletAuth(mockUserId as any, {
           delay: MOCK_DELAYS.AUTH,
         });
+        console.log('🔍 [useWalletConnection] Mock user generated:', mockUser);
 
         const newConnection: WalletConnection = {
           address: mockUser.address,
@@ -117,20 +130,36 @@ export function useWalletConnection(options: UseWalletConnectionOptions = {}): U
         saveSession(mockUser.address, sessionId, mockUserId);
 
         onConnect?.(mockUser);
+        console.log('🔍 [useWalletConnection] Mock connection completed successfully');
       } else {
+        console.log('🔍 [useWalletConnection] Using real MiniKit connection');
+
         // Real MiniKit connection (EXACT pattern as Login component)
-        // Get nonce from API
+        console.log('🔍 [useWalletConnection] Fetching nonce from /api/nonce');
         const res = await fetch(`/api/nonce`);
         const data = await res.json();
         const nonce = data.nonce;
+        console.log('🔍 [useWalletConnection] Received nonce:', nonce);
+
+        console.log('🔍 [useWalletConnection] Creating walletAuthInput with nonce');
+        const authInput = walletAuthInput(nonce);
+        console.log('🔍 [useWalletConnection] walletAuthInput:', authInput);
+
+        console.log('🔍 [useWalletConnection] About to call MiniKit.commandsAsync.walletAuth...');
 
         // Execute wallet auth (unified MiniKit handles mock/real)
-        const { finalPayload } = await MiniKit.commandsAsync.walletAuth(walletAuthInput(nonce));
+        const result = await MiniKit.commandsAsync.walletAuth(authInput);
+        console.log('🔍 [useWalletConnection] walletAuth result:', result);
+
+        const { finalPayload } = result;
+        console.log('🔍 [useWalletConnection] finalPayload:', finalPayload);
 
         if (finalPayload.status === 'error') {
+          console.error('🔍 [useWalletConnection] finalPayload has error status:', finalPayload);
           throw new Error(finalPayload.message || 'Authentication failed');
         }
 
+        console.log('🔍 [useWalletConnection] Calling /api/auth/login with payload');
         // Real API call for authentication (like Login component)
         const response = await fetch('/api/auth/login', {
           method: 'POST',
@@ -142,9 +171,13 @@ export function useWalletConnection(options: UseWalletConnectionOptions = {}): U
             nonce,
           }),
         });
+        console.log('🔍 [useWalletConnection] /api/auth/login response status:', response.status);
 
         if (response.status === 200) {
+          console.log('🔍 [useWalletConnection] Getting user from MiniKit.user');
           const realUser = MiniKit.user;
+          console.log('🔍 [useWalletConnection] MiniKit.user:', realUser);
+
           if (!realUser) {
             throw new Error('Failed to get user data');
           }
@@ -165,12 +198,17 @@ export function useWalletConnection(options: UseWalletConnectionOptions = {}): U
           saveSession(realUser.address, sessionId);
 
           onConnect?.(realUser);
+          console.log('🔍 [useWalletConnection] Real connection completed successfully');
         } else {
+          console.error('🔍 [useWalletConnection] /api/auth/login failed with status:', response.status);
           throw new Error('Authentication failed');
         }
       }
     } catch (err: any) {
-      console.error('Wallet connection failed:', err);
+      console.error('🔍 [useWalletConnection] Wallet connection failed:', err);
+      console.error('🔍 [useWalletConnection] Error type:', typeof err);
+      console.error('🔍 [useWalletConnection] Error message:', err.message);
+      console.error('🔍 [useWalletConnection] Error stack:', err.stack);
 
       let walletError: WalletError;
 
@@ -205,8 +243,10 @@ export function useWalletConnection(options: UseWalletConnectionOptions = {}): U
       setError(walletError);
       setStatus('error');
       onError?.(walletError);
+      console.error('🔍 [useWalletConnection] Set error state:', walletError);
     } finally {
       connectingRef.current = false;
+      console.log('🔍 [useWalletConnection] Connect function completed, connectingRef.current set to false');
     }
   }, [
     isMockMode,

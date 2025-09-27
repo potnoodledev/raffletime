@@ -21,15 +21,22 @@ let miniKitInstance: UnifiedMiniKit;
 
 // Initialize the appropriate MiniKit instance
 const initializeMiniKit = (): UnifiedMiniKit => {
+  console.log('🔍 [UnifiedMiniKit] initializeMiniKit called');
+  console.log('🔍 [UnifiedMiniKit] isMockModeEnabled():', isMockModeEnabled());
+
   if (isMockModeEnabled()) {
     // Use mock MiniKit in development
     const { MockMiniKitInstance } = require("./mock/mock-minikit");
     console.log("🧪 Using Mock MiniKit");
+    console.log('🔍 [UnifiedMiniKit] MockMiniKitInstance:', MockMiniKitInstance);
     return MockMiniKitInstance;
   } else {
     // Use real MiniKit in production
     const { MiniKit: RealMiniKit } = require("@worldcoin/minikit-js");
     console.log("✅ Using Real MiniKit");
+    console.log('🔍 [UnifiedMiniKit] RealMiniKit:', RealMiniKit);
+    console.log('🔍 [UnifiedMiniKit] RealMiniKit.isInstalled():', RealMiniKit.isInstalled());
+    console.log('🔍 [UnifiedMiniKit] RealMiniKit.commandsAsync:', RealMiniKit.commandsAsync);
     return RealMiniKit;
   }
 };
@@ -45,21 +52,35 @@ const getMiniKit = (): UnifiedMiniKit => {
 // Export unified interface
 export const MiniKit = {
   get isInstalled() {
-    return getMiniKit().isInstalled;
+    const kit = getMiniKit();
+    const result = kit.isInstalled;
+    console.log('🔍 [UnifiedMiniKit] isInstalled called, result:', result);
+    return result;
   },
 
   get user() {
-    return getMiniKit().user;
+    const kit = getMiniKit();
+    const result = kit.user;
+    console.log('🔍 [UnifiedMiniKit] user called, result:', result);
+    return result;
   },
 
   get commandsAsync() {
-    return getMiniKit().commandsAsync;
+    const kit = getMiniKit();
+    const result = kit.commandsAsync;
+    console.log('🔍 [UnifiedMiniKit] commandsAsync called, result:', result);
+    console.log('🔍 [UnifiedMiniKit] commandsAsync.walletAuth:', result?.walletAuth);
+    return result;
   },
 
   install: () => {
+    console.log('🔍 [UnifiedMiniKit] install called');
     const kit = getMiniKit();
     if ('install' in kit) {
+      console.log('🔍 [UnifiedMiniKit] calling kit.install()');
       (kit as any).install();
+    } else {
+      console.log('🔍 [UnifiedMiniKit] install method not available on kit');
     }
   }
 };

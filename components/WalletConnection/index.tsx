@@ -121,12 +121,19 @@ export const WalletConnection = ({
    * Handles wallet connection with error handling
    */
   const handleConnect = useCallback(async () => {
+    console.log('🔍 [WalletConnection] handleConnect called');
+    console.log('🔍 [WalletConnection] isConnecting:', isConnecting);
+    console.log('🔍 [WalletConnection] isConnected:', isConnected);
+    console.log('🔍 [WalletConnection] Current status:', status);
+
     try {
+      console.log('🔍 [WalletConnection] Calling connect() function...');
       await connect();
+      console.log('🔍 [WalletConnection] connect() completed successfully');
     } catch (err) {
-      console.error("Connection failed:", err);
+      console.error('🔍 [WalletConnection] Connection failed:', err);
     }
-  }, [connect]);
+  }, [connect, isConnecting, isConnected, status]);
 
   /**
    * Handles wallet disconnection

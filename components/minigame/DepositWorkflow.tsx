@@ -76,14 +76,25 @@ export function DepositWorkflow({ onComplete, onBack }: DepositWorkflowProps) {
   };
 
   const handleComplete = async () => {
+    console.log('🔍 [DepositWorkflow] handleComplete called');
+    console.log('🔍 [DepositWorkflow] depositAmount:', depositAmount);
+    console.log('🔍 [DepositWorkflow] isConnected:', isConnected);
+    console.log('🔍 [DepositWorkflow] user:', user);
+    console.log('🔍 [DepositWorkflow] balance:', balance);
+
     const validation = validateDeposit();
+    console.log('🔍 [DepositWorkflow] validation result:', validation);
+
     if (!validation.isValid || isProcessing) {
+      console.log('🔍 [DepositWorkflow] Validation failed or already processing, returning');
       return;
     }
 
     const amount = parseFloat(depositAmount);
+    console.log('🔍 [DepositWorkflow] Parsed amount:', amount);
 
     try {
+      console.log('🔍 [DepositWorkflow] Setting isProcessing to true');
       setIsProcessing(true);
 
       if (isMockMode && mockUser) {
