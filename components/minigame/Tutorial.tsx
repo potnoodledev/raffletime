@@ -6,16 +6,19 @@ import type { TutorialProps } from '@/types/minigame';
 
 const tutorialSteps = [
   {
-    title: "Welcome to Diamond Hands",
-    content: "A thrilling game of holding onto your valuable diamond while watching its price fluctuate!"
+    title: "DEPOSIT WLD",
+    content: "Deposit any amount of WLD tokens to receive your diamond 💎",
+    backgroundImage: "/minigame-assets/background-1.png"
   },
   {
-    title: "How to Play",
-    content: "Tap the screen to hold your diamond when the countdown appears. If you don't tap in time, you'll sell automatically!"
+    title: "WATCH THE PRICE CHANGE",
+    content: "⏱️ The price of your diamond changes every 5 seconds, so keep an eye on it!",
+    backgroundImage: "/minigame-assets/background-3.png"
   },
   {
-    title: "Ready to Start?",
-    content: "Watch the price change every 5 seconds. Hold as long as you can to maximize your gains - or let it sell when you're satisfied!"
+    title: "HOLD OR LET GO?",
+    content: "Tap the diamond to keep holding, or do nothing to sell your diamond 💰",
+    backgroundImage: "/minigame-assets/background-4.png"
   }
 ];
 
@@ -37,10 +40,31 @@ export const Tutorial = memo(function Tutorial({ onComplete }: TutorialProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col items-center justify-center p-6">
+    <div
+      className="min-h-screen flex flex-col items-center justify-center p-6"
+      style={{
+        backgroundImage: `url(/minigame-assets/zoom-background.png)`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
+    >
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
+        {/* Guide image for current step */}
+        <div className="flex justify-center mb-6">
+          <div className="w-32 h-32 rounded-xl overflow-hidden bg-gradient-to-br from-[#edaa38] to-[#d4941f] p-1">
+            <div className="w-full h-full rounded-lg overflow-hidden">
+              <img
+                src={tutorialSteps[currentStep].backgroundImage}
+                alt={tutorialSteps[currentStep].title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+        </div>
+
         <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold mb-4 text-gray-800">
+          <h2 className="text-4xl mb-4 text-black" style={{ fontFamily: 'Aubrey, cursive' }}>
             {tutorialSteps[currentStep].title}
           </h2>
           <p className="text-gray-600 text-lg leading-relaxed">
@@ -55,7 +79,7 @@ export const Tutorial = memo(function Tutorial({ onComplete }: TutorialProps) {
               key={index}
               data-testid={`progress-dot-${index}`}
               className={`w-3 h-3 rounded-full transition-colors ${
-                index === currentStep ? 'bg-blue-600 active' : 'bg-gray-300'
+                index === currentStep ? 'bg-red-600 active' : 'bg-gray-300'
               }`}
             />
           ))}
@@ -80,7 +104,7 @@ export const Tutorial = memo(function Tutorial({ onComplete }: TutorialProps) {
 
           <Button
             onClick={nextStep}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white"
           >
             {currentStep === tutorialSteps.length - 1 ? 'Get Started' : 'Next'}
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -95,7 +119,7 @@ export const Tutorial = memo(function Tutorial({ onComplete }: TutorialProps) {
         <Button
           variant="ghost"
           onClick={onComplete}
-          className="text-gray-500 hover:text-gray-700"
+          className="text-white hover:text-gray-200"
         >
           Skip
         </Button>

@@ -98,51 +98,56 @@ export function HelpScreen({ onBack }: HelpScreenProps) {
 
             <AccordionItem value="strategy">
               <AccordionTrigger className="text-left text-lg text-black">
-                What's the best strategy?
+                What's the best strategy for winning?
               </AccordionTrigger>
               <AccordionContent className="text-black space-y-3">
                 <p>
-                  The key is finding the right balance between risk and reward. Here are some tips:
+                  There's no guaranteed winning strategy! The volatility is random, so it's all about your risk tolerance and timing.
                 </p>
-                <ul className="list-disc list-inside ml-4 space-y-1">
-                  <li>Set a profit target before you start playing</li>
-                  <li>Consider taking profits when you're up 20-30%</li>
-                  <li>Don't get too greedy - the volatility works both ways</li>
-                  <li>Remember that each tap is a conscious decision to hold</li>
-                  <li>Sometimes the best strategy is knowing when to let go</li>
-                </ul>
+                <p>
+                  Some players prefer to sell quickly when they see small gains, while others hold on for bigger potential rewards. Remember: the longer you hold, the more the price can swing in either direction.
+                </p>
+                <p>
+                  Watch the background colors for visual cues - green means you're currently profitable, red means you're at a loss.
+                </p>
               </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem value="withdrawal">
+            <AccordionItem value="minimum-deposit">
               <AccordionTrigger className="text-left text-lg text-black">
-                How do I withdraw my winnings?
+                What's the minimum deposit amount?
               </AccordionTrigger>
               <AccordionContent className="text-black space-y-3">
                 <p>
-                  When you sell your diamond (either manually or automatically), your WLD is instantly returned to your connected wallet.
+                  The minimum deposit is 0.0001 WLD tokens. There's no maximum limit - you can deposit as much as you're comfortable potentially losing.
                 </p>
                 <p>
-                  The amount you receive is based on the final diamond value at the time of sale. All transactions are processed on-chain for complete transparency and security.
+                  Remember: only deposit what you can afford to lose, as the diamond's value can go down as well as up!
                 </p>
               </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem value="fees">
+            <AccordionItem value="get-deposit-back">
               <AccordionTrigger className="text-left text-lg text-black">
-                Are there any fees?
+                Can I get my deposit back?
               </AccordionTrigger>
-              <AccordionContent className="text-black space-y-3">
+              <AccordionContent className="text-black">
                 <p>
-                  There are no hidden fees for playing Diamond Hands. You deposit WLD and receive back the full value of your diamond when you sell.
-                </p>
-                <p>
-                  Standard network gas fees apply for on-chain transactions, but the game itself doesn't take any commission on your winnings or losses.
+                  Sorry, no, once you deposit your WLD, you must play the game to try to get it back.
                 </p>
               </AccordionContent>
             </AccordionItem>
 
-
+            <AccordionItem value="who-built-this">
+              <AccordionTrigger className="text-left text-lg text-black">
+                Who built this thing?
+              </AccordionTrigger>
+              <AccordionContent className="text-black">
+                <p>
+                  Diamond Hands is a project of Paul Gadi (@polats) and Luis Buenaventura (@helloluis)
+                </p>
+              </AccordionContent>
+            </AccordionItem>
           </Accordion>
         </div>
       </div>
