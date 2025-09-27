@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 
 export function DebugButton() {
   const pathname = usePathname();
-  const [isVisible, setIsVisible] = useState(true);
+  const [isVisible, setIsVisible] = useState(false); // Start minimized
 
   // Don't show on the debug page itself
   if (pathname === '/debug-wallet') {

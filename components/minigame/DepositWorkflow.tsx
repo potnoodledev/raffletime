@@ -30,6 +30,15 @@ export function DepositWorkflow({ onComplete, onBack }: DepositWorkflowProps) {
   });
   const { isMockMode, mockUser } = useMockMode();
 
+  // Debug wallet connection status
+  console.log('🔍 [DepositWorkflow] Wallet status:', {
+    isConnected,
+    user,
+    walletError,
+    balance,
+    balanceLoading
+  });
+
   const handlePresetAmount = (amount: number) => {
     setDepositAmount(amount.toString());
     setIsCustom(false);
