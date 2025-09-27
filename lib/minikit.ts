@@ -10,6 +10,7 @@ import { isMockModeEnabled } from "./mock/environment";
 interface UnifiedMiniKit {
   isInstalled(): boolean;
   user: any;
+  walletAddress: string;
   commandsAsync: {
     walletAuth(input: WalletAuthInput): Promise<any>;
     pay(payload: any): Promise<any>;
@@ -51,10 +52,10 @@ const getMiniKit = (): UnifiedMiniKit => {
 
 // Export unified interface
 export const MiniKit = {
-  get isInstalled() {
+  isInstalled: () => {
     const kit = getMiniKit();
-    const result = kit.isInstalled;
-    console.log('🔍 [UnifiedMiniKit] isInstalled called, result:', result);
+    const result = kit.isInstalled();
+    console.log('🔍 [UnifiedMiniKit] isInstalled() called, result:', result);
     return result;
   },
 
@@ -62,6 +63,13 @@ export const MiniKit = {
     const kit = getMiniKit();
     const result = kit.user;
     console.log('🔍 [UnifiedMiniKit] user called, result:', result);
+    return result;
+  },
+
+  get walletAddress() {
+    const kit = getMiniKit();
+    const result = kit.walletAddress;
+    console.log('🔍 [UnifiedMiniKit] walletAddress called, result:', result);
     return result;
   },
 
