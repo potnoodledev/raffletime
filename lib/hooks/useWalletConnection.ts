@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { WalletConnection, WalletUser, WalletConnectionStatus, WalletError } from '@/types/wallet';
-import { MiniKit, WalletAuthInput } from '@/lib/minikit';
+import { MiniKit, WalletAuthInput } from '@worldcoin/minikit-js';
 import { generateMockWalletUser, simulateMockWalletAuth, MOCK_DELAYS } from '@/lib/mock/mock-wallet-data';
 
 export interface UseWalletConnectionOptions {
@@ -33,9 +33,6 @@ export function useWalletConnection(options: UseWalletConnectionOptions = {}): U
   const [error, setError] = useState<WalletError | null>(null);
   const connectingRef = useRef(false);
 
-  // Check if we're in mock mode
-  const isMockMode = process.env.NEXT_PUBLIC_MOCK_MODE === 'true';
-
   // Generate nonce for authentication
   const generateNonce = useCallback(() => {
     return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
@@ -56,12 +53,12 @@ export function useWalletConnection(options: UseWalletConnectionOptions = {}): U
   }, []);
 
   // Save session to localStorage
-  const saveSession = useCallback((walletAddress: string, sessionId: string, mockUserId?: string) => {
+  const saveSession = useCallback((walletAddress: string, sessionId: string) => {
     const session = {
       walletAddress,
       sessionId,
       autoConnect: true,
-      mockUserId: mockUserId || null,
+      mockUserId: null,
       timestamp: Date.now(),
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
@@ -72,20 +69,9 @@ export function useWalletConnection(options: UseWalletConnectionOptions = {}): U
     localStorage.removeItem(STORAGE_KEY);
   }, []);
 
-  // Create wallet auth input (same pattern as Login component)
-  const walletAuthInput = useCallback((nonce: string): WalletAuthInput => {
-    return {
-      nonce,
-      requestId: '0',
-      expirationTime: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000),
-      notBefore: new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
-      statement: 'Connect to RaffleTime Diamond Hands minigame',
-    };
-  }, []);
-
-  // Connect to wallet
+  // Connect to wallet - EXACT COPY of working debug page pattern
   const connect = useCallback(async () => {
-    console.log('🔍 [useWalletConnection] Connect function called');
+    console.log('🔍 [useWalletConnection] Connect function called - using debug page pattern');
 
     if (connectingRef.current) {
       console.log('🔍 [useWalletConnection] Already connecting, skipping');
@@ -98,116 +84,99 @@ export function useWalletConnection(options: UseWalletConnectionOptions = {}): U
       setStatus('connecting');
       setError(null);
 
-      console.log('🔍 [useWalletConnection] isMockMode:', isMockMode);
-      console.log('🔍 [useWalletConnection] MiniKit object:', MiniKit);
-      console.log('🔍 [useWalletConnection] MiniKit.commandsAsync:', MiniKit.commandsAsync);
-      console.log('🔍 [useWalletConnection] MiniKit.commandsAsync.walletAuth:', MiniKit.commandsAsync?.walletAuth);
+      // Step 1: Check if MiniKit is installed (EXACT debug page pattern)
+      console.log('🔍 [useWalletConnection] Step 1: Checking MiniKit installation...');
+      if (!MiniKit.isInstalled()) {
+        console.log('🔍 [useWalletConnection] ❌ MiniKit is not installed');
+        throw new Error('MINIKIT_NOT_INSTALLED');
+      }
+      console.log('🔍 [useWalletConnection] ✅ MiniKit is installed');
 
-      if (isMockMode) {
-        console.log('🔍 [useWalletConnection] Using mock mode connection');
-        // Mock mode connection (same as Login component)
-        const mockUserId = localStorage.getItem('mockUserId') || 'active-user';
-        console.log('🔍 [useWalletConnection] Mock user ID:', mockUserId);
+      // Step 2: Fetch nonce from backend (EXACT debug page pattern)
+      console.log('🔍 [useWalletConnection] Step 2: Fetching nonce from /api/nonce...');
+      const res = await fetch('/api/nonce');
+      const { nonce } = await res.json();
+      console.log('🔍 [useWalletConnection] ✅ Received nonce:', nonce);
 
-        const mockUser = await simulateMockWalletAuth(mockUserId as any, {
-          delay: MOCK_DELAYS.AUTH,
-        });
-        console.log('🔍 [useWalletConnection] Mock user generated:', mockUser);
+      // Step 3: Configure wallet auth parameters (EXACT debug page pattern)
+      console.log('🔍 [useWalletConnection] Step 3: Configuring wallet auth parameters...');
+      const authParams: WalletAuthInput = {
+        nonce: nonce,
+        requestId: '0',
+        expirationTime: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        notBefore: new Date(Date.now() - 24 * 60 * 60 * 1000),
+        statement: 'Connect to RaffleTime Diamond Hands minigame'
+      };
+      console.log('🔍 [useWalletConnection] ✅ Auth params:', authParams);
+
+      // Step 4: Execute wallet authentication (EXACT debug page pattern)
+      console.log('🔍 [useWalletConnection] Step 4: Calling MiniKit.commandsAsync.walletAuth...');
+      const result = await MiniKit.commandsAsync.walletAuth(authParams);
+      console.log('🔍 [useWalletConnection] ✅ walletAuth result:', result);
+
+      const { commandPayload, finalPayload } = result;
+      console.log('🔍 [useWalletConnection] Command payload:', commandPayload);
+      console.log('🔍 [useWalletConnection] Final payload:', finalPayload);
+
+      // Step 5: Handle the response (EXACT debug page pattern)
+      if (finalPayload.status === 'success') {
+        console.log('🔍 [useWalletConnection] ✅ Authentication successful!');
+
+        // Step 6: Get wallet address (EXACT debug page pattern)
+        console.log('🔍 [useWalletConnection] Step 6: Getting wallet address...');
+        const address = MiniKit.walletAddress;
+        console.log('🔍 [useWalletConnection] Wallet address:', address);
+
+        // Create user object matching our types
+        const walletUser: WalletUser = {
+          address: address,
+          username: undefined,
+          profilePicture: undefined,
+          balance: undefined
+        };
 
         const newConnection: WalletConnection = {
-          address: mockUser.address,
+          address: address,
           isConnected: true,
           connectionTimestamp: Date.now(),
           lastRefreshTimestamp: Date.now(),
         };
 
         setConnection(newConnection);
-        setUser(mockUser);
+        setUser(walletUser);
         setStatus('connected');
 
         // Save session
-        const sessionId = `mock-session-${Date.now()}`;
-        saveSession(mockUser.address, sessionId, mockUserId);
+        const sessionId = `session-${Date.now()}`;
+        saveSession(address, sessionId);
 
-        onConnect?.(mockUser);
-        console.log('🔍 [useWalletConnection] Mock connection completed successfully');
-      } else {
-        console.log('🔍 [useWalletConnection] Using real MiniKit connection');
+        onConnect?.(walletUser);
+        console.log('🔍 [useWalletConnection] ✅ Connection completed successfully');
 
-        // Real MiniKit connection (EXACT pattern as Login component)
-        console.log('🔍 [useWalletConnection] Fetching nonce from /api/nonce');
-        const res = await fetch(`/api/nonce`);
-        const data = await res.json();
-        const nonce = data.nonce;
-        console.log('🔍 [useWalletConnection] Received nonce:', nonce);
-
-        console.log('🔍 [useWalletConnection] Creating walletAuthInput with nonce');
-        const authInput = walletAuthInput(nonce);
-        console.log('🔍 [useWalletConnection] walletAuthInput:', authInput);
-
-        console.log('🔍 [useWalletConnection] About to call MiniKit.commandsAsync.walletAuth...');
-
-        // Execute wallet auth (unified MiniKit handles mock/real)
-        const result = await MiniKit.commandsAsync.walletAuth(authInput);
-        console.log('🔍 [useWalletConnection] walletAuth result:', result);
-
-        const { finalPayload } = result;
-        console.log('🔍 [useWalletConnection] finalPayload:', finalPayload);
-
-        if (finalPayload.status === 'error') {
-          console.error('🔍 [useWalletConnection] finalPayload has error status:', finalPayload);
-          throw new Error(finalPayload.message || 'Authentication failed');
-        }
-
-        console.log('🔍 [useWalletConnection] Calling /api/auth/login with payload');
-        // Real API call for authentication (like Login component)
-        const response = await fetch('/api/auth/login', {
+        // Step 7: Send to backend for verification (EXACT debug page pattern)
+        console.log('🔍 [useWalletConnection] Step 7: Sending to backend for verification...');
+        const response = await fetch('/api/complete-siwe', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             payload: finalPayload,
-            nonce,
-          }),
+            nonce
+          })
         });
-        console.log('🔍 [useWalletConnection] /api/auth/login response status:', response.status);
 
-        if (response.status === 200) {
-          console.log('🔍 [useWalletConnection] Getting user from MiniKit.user');
-          const realUser = MiniKit.user;
-          console.log('🔍 [useWalletConnection] MiniKit.user:', realUser);
+        const verificationResult = await response.json();
+        console.log('🔍 [useWalletConnection] Backend verification:', verificationResult);
 
-          if (!realUser) {
-            throw new Error('Failed to get user data');
-          }
-
-          const newConnection: WalletConnection = {
-            address: realUser.address,
-            isConnected: true,
-            connectionTimestamp: Date.now(),
-            lastRefreshTimestamp: Date.now(),
-          };
-
-          setConnection(newConnection);
-          setUser(realUser);
-          setStatus('connected');
-
-          // Save session
-          const sessionId = `session-${Date.now()}`;
-          saveSession(realUser.address, sessionId);
-
-          onConnect?.(realUser);
-          console.log('🔍 [useWalletConnection] Real connection completed successfully');
-        } else {
-          console.error('🔍 [useWalletConnection] /api/auth/login failed with status:', response.status);
-          throw new Error('Authentication failed');
+      } else {
+        console.log('🔍 [useWalletConnection] ❌ Authentication failed:', finalPayload.status);
+        if (finalPayload.message) {
+          console.log('🔍 [useWalletConnection] Error message:', finalPayload.message);
         }
+        throw new Error(finalPayload.message || 'Authentication failed');
       }
+
     } catch (err: any) {
-      console.error('🔍 [useWalletConnection] Wallet connection failed:', err);
-      console.error('🔍 [useWalletConnection] Error type:', typeof err);
-      console.error('🔍 [useWalletConnection] Error message:', err.message);
+      console.error('🔍 [useWalletConnection] ❌ Error occurred:', err.message);
       console.error('🔍 [useWalletConnection] Error stack:', err.stack);
 
       let walletError: WalletError;
@@ -246,12 +215,10 @@ export function useWalletConnection(options: UseWalletConnectionOptions = {}): U
       console.error('🔍 [useWalletConnection] Set error state:', walletError);
     } finally {
       connectingRef.current = false;
-      console.log('🔍 [useWalletConnection] Connect function completed, connectingRef.current set to false');
+      console.log('🔍 [useWalletConnection] === Wallet Authentication Complete ===');
     }
   }, [
-    isMockMode,
     generateNonce,
-    walletAuthInput,
     saveSession,
     onConnect,
     onError,
@@ -267,7 +234,7 @@ export function useWalletConnection(options: UseWalletConnectionOptions = {}): U
     onDisconnect?.();
   }, [clearSession, onDisconnect]);
 
-  // Refresh connection
+  // Refresh connection - using direct MiniKit
   const refresh = useCallback(async () => {
     if (!connection || !user) {
       return;
@@ -276,29 +243,30 @@ export function useWalletConnection(options: UseWalletConnectionOptions = {}): U
     try {
       setError(null);
 
-      if (isMockMode) {
-        // Mock mode refresh
-        const mockUserId = localStorage.getItem('mockUserId') || 'active-user';
-        const mockUser = generateMockWalletUser(mockUserId as any);
-        setUser(mockUser);
+      // Get current wallet address using direct MiniKit
+      const currentAddress = MiniKit.walletAddress;
+
+      if (currentAddress) {
+        // Update user with current address
+        const walletUser: WalletUser = {
+          address: currentAddress,
+          username: undefined,
+          profilePicture: undefined,
+          balance: undefined
+        };
+        setUser(walletUser);
+
+        // Update connection with current address
+        setConnection(prev => prev ? {
+          ...prev,
+          address: currentAddress,
+          lastRefreshTimestamp: Date.now(),
+        } : null);
       } else {
-        // Real MiniKit refresh (using unified interface)
-        const currentUser = MiniKit.user;
-
-        if (currentUser) {
-          setUser(currentUser);
-        } else {
-          // User disconnected externally
-          disconnect();
-          return;
-        }
+        // User disconnected externally
+        disconnect();
+        return;
       }
-
-      // Update refresh timestamp
-      setConnection(prev => prev ? {
-        ...prev,
-        lastRefreshTimestamp: Date.now(),
-      } : null);
     } catch (err) {
       console.error('Failed to refresh wallet connection:', err);
       setError({
@@ -307,7 +275,7 @@ export function useWalletConnection(options: UseWalletConnectionOptions = {}): U
         details: { retry: true },
       });
     }
-  }, [connection, user, isMockMode, disconnect]);
+  }, [connection, user, disconnect]);
 
   // Auto-connect on mount
   useEffect(() => {
@@ -322,11 +290,6 @@ export function useWalletConnection(options: UseWalletConnectionOptions = {}): U
       const maxAge = 7 * 24 * 60 * 60 * 1000; // 7 days
 
       if (sessionAge < maxAge) {
-        // Set mock user if in mock mode
-        if (isMockMode && session.mockUserId) {
-          localStorage.setItem('mockUserId', session.mockUserId);
-        }
-
         // Attempt auto-connect
         connect().catch(() => {
           // Auto-connect failed, clear invalid session
@@ -337,7 +300,7 @@ export function useWalletConnection(options: UseWalletConnectionOptions = {}): U
         clearSession();
       }
     }
-  }, [autoConnect, connect, getStoredSession, clearSession, isMockMode]);
+  }, [autoConnect, connect, getStoredSession, clearSession]);
 
   // Cleanup on unmount
   useEffect(() => {
