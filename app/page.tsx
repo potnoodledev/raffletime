@@ -1,17 +1,32 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { MiniKit } from "@/lib/minikit";
 import { Login } from "@/components/Login";
 import { RaffleList } from "@/components/RaffleList";
+import { useLaunchMode } from "@/components/providers/LaunchModeProvider";
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [showQRCode, setShowQRCode] = useState(false);
+  const { isLaunched } = useLaunchMode();
+  const router = useRouter();
+
+  // Check if app is launched, redirect to minigame if not
+  useEffect(() => {
+    if (!isLaunched) {
+      router.push('/minigame');
+      return;
+    }
+  }, [isLaunched, router]);
 
   useEffect(() => {
+    // Only proceed with MiniKit check if app is launched
+    if (!isLaunched) return;
+
     let attempts = 0;
     const maxAttempts = 10; // Try for 5 seconds (10 * 500ms)
-    
+
     const checkMiniKit = async () => {
       const isInstalled = MiniKit.isInstalled();
       if (isInstalled) {
@@ -28,7 +43,12 @@ export default function Home() {
     };
 
     checkMiniKit();
-  }, []);
+  }, [isLaunched]);
+
+  // Don't render main app content if not launched
+  if (!isLaunched) {
+    return null; // Will redirect to minigame
+  }
 
   if (isLoading) {
     return (
