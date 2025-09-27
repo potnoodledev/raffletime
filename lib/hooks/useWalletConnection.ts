@@ -118,43 +118,56 @@ export function useWalletConnection(options: UseWalletConnectionOptions = {}): U
 
         onConnect?.(mockUser);
       } else {
-        // Real MiniKit connection (same pattern as Login component)
-        if (!MiniKit.isInstalled()) {
-          throw new Error('MINIKIT_NOT_INSTALLED');
-        }
+        // Real MiniKit connection (EXACT pattern as Login component)
+        // Get nonce from API
+        const res = await fetch(`/api/nonce`);
+        const data = await res.json();
+        const nonce = data.nonce;
 
-        // Get nonce
-        const nonce = generateNonce();
-
-        // Execute wallet auth (same pattern as Login component)
+        // Execute wallet auth (unified MiniKit handles mock/real)
         const { finalPayload } = await MiniKit.commandsAsync.walletAuth(walletAuthInput(nonce));
 
         if (finalPayload.status === 'error') {
           throw new Error(finalPayload.message || 'Authentication failed');
         }
 
-        // Get user data from MiniKit
-        const miniKitUser = MiniKit.user;
-        if (!miniKitUser) {
-          throw new Error('Failed to get user data');
+        // Real API call for authentication (like Login component)
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            payload: finalPayload,
+            nonce,
+          }),
+        });
+
+        if (response.status === 200) {
+          const realUser = MiniKit.user;
+          if (!realUser) {
+            throw new Error('Failed to get user data');
+          }
+
+          const newConnection: WalletConnection = {
+            address: realUser.address,
+            isConnected: true,
+            connectionTimestamp: Date.now(),
+            lastRefreshTimestamp: Date.now(),
+          };
+
+          setConnection(newConnection);
+          setUser(realUser);
+          setStatus('connected');
+
+          // Save session
+          const sessionId = `session-${Date.now()}`;
+          saveSession(realUser.address, sessionId);
+
+          onConnect?.(realUser);
+        } else {
+          throw new Error('Authentication failed');
         }
-
-        const newConnection: WalletConnection = {
-          address: miniKitUser.address,
-          isConnected: true,
-          connectionTimestamp: Date.now(),
-          lastRefreshTimestamp: Date.now(),
-        };
-
-        setConnection(newConnection);
-        setUser(miniKitUser);
-        setStatus('connected');
-
-        // Save session
-        const sessionId = `session-${Date.now()}`;
-        saveSession(miniKitUser.address, sessionId);
-
-        onConnect?.(miniKitUser);
       }
     } catch (err: any) {
       console.error('Wallet connection failed:', err);
