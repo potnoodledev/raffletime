@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { WalletConnection, WalletUser, WalletConnectionStatus, WalletError } from '@/types/wallet';
-import { getMiniKit } from '@/lib/minikit';
+import { MiniKit, WalletAuthInput } from '@/lib/minikit';
 import { generateMockWalletUser, simulateMockWalletAuth, MOCK_DELAYS } from '@/lib/mock/mock-wallet-data';
 
 export interface UseWalletConnectionOptions {
@@ -72,45 +72,16 @@ export function useWalletConnection(options: UseWalletConnectionOptions = {}): U
     localStorage.removeItem(STORAGE_KEY);
   }, []);
 
-  // Check MiniKit availability and installation
-  const checkMiniKitAvailability = useCallback(async () => {
-    if (isMockMode) {
-      return true;
-    }
-
-    try {
-      const MiniKit = await getMiniKit();
-
-      // Check if MiniKit is installed
-      if (!MiniKit?.isInstalled()) {
-        // Try to install MiniKit
-        if (typeof MiniKit?.install === 'function') {
-          MiniKit.install();
-
-          // Wait a bit for installation to complete
-          await new Promise(resolve => setTimeout(resolve, 500));
-
-          // Check again
-          if (!MiniKit.isInstalled()) {
-            return false;
-          }
-        } else {
-          return false;
-        }
-      }
-
-      // Verify walletAuth command is available
-      if (!MiniKit.commandsAsync?.walletAuth) {
-        console.warn('MiniKit walletAuth command not available');
-        return false;
-      }
-
-      return true;
-    } catch (error) {
-      console.error('MiniKit availability check failed:', error);
-      return false;
-    }
-  }, [isMockMode]);
+  // Create wallet auth input (same pattern as Login component)
+  const walletAuthInput = useCallback((nonce: string): WalletAuthInput => {
+    return {
+      nonce,
+      requestId: '0',
+      expirationTime: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000),
+      notBefore: new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
+      statement: 'Connect to RaffleTime Diamond Hands minigame',
+    };
+  }, []);
 
   // Connect to wallet
   const connect = useCallback(async () => {
@@ -123,14 +94,8 @@ export function useWalletConnection(options: UseWalletConnectionOptions = {}): U
       setStatus('connecting');
       setError(null);
 
-      // Check MiniKit availability
-      const isAvailable = await checkMiniKitAvailability();
-      if (!isAvailable) {
-        throw new Error('MINIKIT_NOT_AVAILABLE');
-      }
-
       if (isMockMode) {
-        // Mock mode connection
+        // Mock mode connection (same as Login component)
         const mockUserId = localStorage.getItem('mockUserId') || 'active-user';
         const mockUser = await simulateMockWalletAuth(mockUserId as any, {
           delay: MOCK_DELAYS.AUTH,
@@ -153,55 +118,53 @@ export function useWalletConnection(options: UseWalletConnectionOptions = {}): U
 
         onConnect?.(mockUser);
       } else {
-        // Real MiniKit connection
-        const MiniKit = await getMiniKit();
+        // Real MiniKit connection (same pattern as Login component)
+        if (!MiniKit.isInstalled()) {
+          throw new Error('MINIKIT_NOT_INSTALLED');
+        }
+
+        // Get nonce
         const nonce = generateNonce();
 
-        const walletAuthInput = {
-          nonce,
-          requestId: '0',
-          expirationTime: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000),
-          notBefore: new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
-          statement: 'Connect to RaffleTime Diamond Hands minigame',
+        // Execute wallet auth (same pattern as Login component)
+        const { finalPayload } = await MiniKit.commandsAsync.walletAuth(walletAuthInput(nonce));
+
+        if (finalPayload.status === 'error') {
+          throw new Error(finalPayload.message || 'Authentication failed');
+        }
+
+        // Get user data from MiniKit
+        const miniKitUser = MiniKit.user;
+        if (!miniKitUser) {
+          throw new Error('Failed to get user data');
+        }
+
+        const newConnection: WalletConnection = {
+          address: miniKitUser.address,
+          isConnected: true,
+          connectionTimestamp: Date.now(),
+          lastRefreshTimestamp: Date.now(),
         };
 
-        const result = await MiniKit.commandsAsync.walletAuth(walletAuthInput);
+        setConnection(newConnection);
+        setUser(miniKitUser);
+        setStatus('connected');
 
-        if (result && result.status === 'success') {
-          const miniKitUser = MiniKit.user;
-          if (!miniKitUser) {
-            throw new Error('Failed to get user data');
-          }
+        // Save session
+        const sessionId = `session-${Date.now()}`;
+        saveSession(miniKitUser.address, sessionId);
 
-          const newConnection: WalletConnection = {
-            address: miniKitUser.address,
-            isConnected: true,
-            connectionTimestamp: Date.now(),
-            lastRefreshTimestamp: Date.now(),
-          };
-
-          setConnection(newConnection);
-          setUser(miniKitUser);
-          setStatus('connected');
-
-          // Save session
-          const sessionId = `session-${Date.now()}`;
-          saveSession(miniKitUser.address, sessionId);
-
-          onConnect?.(miniKitUser);
-        } else {
-          throw new Error('Authentication failed');
-        }
+        onConnect?.(miniKitUser);
       }
     } catch (err: any) {
       console.error('Wallet connection failed:', err);
 
       let walletError: WalletError;
 
-      if (err.message === 'MINIKIT_NOT_AVAILABLE' || err.message === 'MINIKIT_NOT_INSTALLED') {
+      if (err.message === 'MINIKIT_NOT_INSTALLED') {
         walletError = {
           code: 'MINIKIT_NOT_INSTALLED',
-          message: 'World App is required and MiniKit must be properly installed. Please make sure you\'re using the World App.',
+          message: 'World App is required. Please make sure you\'re using the World App.',
           details: {
             helpUrl: 'https://worldcoin.org/download',
             installRequired: true
@@ -234,8 +197,8 @@ export function useWalletConnection(options: UseWalletConnectionOptions = {}): U
     }
   }, [
     isMockMode,
-    checkMiniKitAvailability,
     generateNonce,
+    walletAuthInput,
     saveSession,
     onConnect,
     onError,
@@ -266,8 +229,7 @@ export function useWalletConnection(options: UseWalletConnectionOptions = {}): U
         const mockUser = generateMockWalletUser(mockUserId as any);
         setUser(mockUser);
       } else {
-        // Real MiniKit refresh
-        const MiniKit = await getMiniKit();
+        // Real MiniKit refresh (using unified interface)
         const currentUser = MiniKit.user;
 
         if (currentUser) {
