@@ -79,7 +79,7 @@ export interface CircularCountdownProps {
   isActive: boolean;             // Whether countdown is running
   onComplete: () => void;        // Called when countdown finishes
   size?: number;                 // Size of the circle
-  key?: string;                  // For resetting the countdown
+  resetKey?: string;             // For resetting the countdown
 }
 
 export interface MinigameAppProps {

@@ -1,55 +1,56 @@
 'use client';
 
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import type { CircularCountdownProps } from '@/types/minigame';
 
-import { memo } from 'react';
-
-export const CircularCountdown = memo(function CircularCountdown({
+export function CircularCountdown({
   duration,
   onComplete,
   isActive,
   size = 96,
-  key: resetKey
+  resetKey
 }: CircularCountdownProps) {
   const [timeLeft, setTimeLeft] = useState(duration);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const hasCompletedRef = useRef(false);
+  const startTimeRef = useRef<number | null>(null);
+  const completedRef = useRef(false);
+  const onCompleteRef = useRef(onComplete);
 
-  // Memoize the onComplete callback to prevent unnecessary re-renders
-  const handleComplete = useCallback(() => {
-    if (!hasCompletedRef.current) {
-      hasCompletedRef.current = true;
-      // Use setTimeout to defer the state update to avoid render-time setState
-      setTimeout(() => {
-        onComplete();
-      }, 0);
-    }
-  }, [onComplete]);
+  // Keep callback ref current
+  onCompleteRef.current = onComplete;
 
-  // Reset timer when key prop changes (for resetting)
+  // Effect to manage isActive changes
   useEffect(() => {
-    setTimeLeft(duration);
-    hasCompletedRef.current = false;
-  }, [resetKey, duration]);
-
-  // Manage countdown interval
-  useEffect(() => {
-    // Clear any existing interval
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
     }
 
-    if (isActive && timeLeft > 0 && !hasCompletedRef.current) {
+    if (isActive && !completedRef.current) {
+      startTimeRef.current = Date.now();
+
       intervalRef.current = setInterval(() => {
-        setTimeLeft((prev) => {
-          if (prev <= 0.1) {
-            handleComplete();
-            return 0;
+        if (completedRef.current) {
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
           }
-          return prev - 0.1;
-        });
+          return;
+        }
+
+        const elapsed = (Date.now() - startTimeRef.current!) / 1000;
+        const remaining = Math.max(0, duration - elapsed);
+
+        setTimeLeft(remaining);
+
+        if (remaining <= 0) {
+          completedRef.current = true;
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
+          }
+          onCompleteRef.current();
+        }
       }, 100);
     }
 
@@ -59,7 +60,16 @@ export const CircularCountdown = memo(function CircularCountdown({
         intervalRef.current = null;
       }
     };
-  }, [isActive, handleComplete, timeLeft]);
+  }, [isActive, duration]);
+
+  // Effect to handle resets only when not active
+  useEffect(() => {
+    if (!isActive) {
+      setTimeLeft(duration);
+      completedRef.current = false;
+      startTimeRef.current = null;
+    }
+  }, [resetKey, duration, isActive]);
 
   const progress = (timeLeft / duration) * 100;
   const radius = (size - 12) / 2; // Account for stroke width
@@ -111,4 +121,4 @@ export const CircularCountdown = memo(function CircularCountdown({
       </div>
     </div>
   );
-});
+}

@@ -165,15 +165,15 @@ export function GameScreen({ originalDeposit, onGameEnd, onPlayAgain }: GameScre
 
       {/* Price pills */}
       <div className="w-full max-w-sm space-y-3 mb-8">
-        <div className="bg-white rounded-full px-6 py-3 shadow-lg text-center">
-          <div className="text-sm text-gray-600 mb-1">CURRENT</div>
-          <div className="text-xl font-bold" data-testid="current-price">
-            {currentPrice.toFixed(4)} WLD
+        <div className="bg-white rounded-full px-6 py-3 shadow-lg text-center border-2 border-gray-200">
+          <div className="text-xs font-semibold text-gray-700 mb-1 tracking-wide">CURRENT</div>
+          <div className="text-2xl font-bold text-gray-900" data-testid="current-price">
+            {currentPrice.toFixed(4)} <span className="text-lg text-gray-700">WLD</span>
           </div>
         </div>
-        <div className="bg-gray-100 rounded-full px-6 py-3 text-center">
-          <div className="text-sm text-gray-600 mb-1">ORIGINAL</div>
-          <div className="text-xl">{originalDeposit.toFixed(4)} WLD</div>
+        <div className="bg-gray-50 rounded-full px-6 py-3 text-center border-2 border-gray-300">
+          <div className="text-xs font-semibold text-gray-700 mb-1 tracking-wide">ORIGINAL</div>
+          <div className="text-xl font-semibold text-gray-800">{originalDeposit.toFixed(4)} <span className="text-lg text-gray-600">WLD</span></div>
         </div>
       </div>
 
@@ -227,20 +227,20 @@ export function GameScreen({ originalDeposit, onGameEnd, onPlayAgain }: GameScre
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="absolute top-full left-1/2 transform -translate-x-1/2 mt-4 text-center"
+              className="absolute top-full left-1/2 transform -translate-x-1/2 mt-6 text-center w-full flex flex-col items-center"
             >
               <div
-                className="bg-white rounded-lg px-4 py-2 shadow-lg mb-4 cursor-pointer hover:bg-gray-50 transition-colors"
+                className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl px-6 py-3 shadow-xl mb-4 cursor-pointer hover:from-blue-600 hover:to-blue-700 transition-all transform hover:scale-105 border-2 border-blue-400"
                 onClick={handleTap}
               >
-                <span className="text-lg font-semibold">Tap to Hold!</span>
+                <span className="text-xl font-bold text-white drop-shadow-sm">💎 Tap to Hold! 💎</span>
               </div>
               <div data-testid="countdown-circle">
                 <CircularCountdown
                   duration={GAME_CONSTANTS.COUNTDOWN_DURATION}
                   onComplete={handleCountdownComplete}
                   isActive={isCountingDown}
-                  key={countdownKey}
+                  resetKey={countdownKey.toString()}
                 />
               </div>
             </motion.div>
@@ -250,8 +250,10 @@ export function GameScreen({ originalDeposit, onGameEnd, onPlayAgain }: GameScre
 
       {/* Game instructions */}
       {gameStarted && !showTapPrompt && !gameEnded && (
-        <div className="text-center text-gray-600">
-          <p>Wait for the next price update...</p>
+        <div className="text-center">
+          <p className="text-lg font-medium text-gray-800 bg-white/80 backdrop-blur-sm rounded-full px-6 py-3 shadow-md">
+            ⏱️ Wait for the next price update...
+          </p>
         </div>
       )}
     </motion.div>
