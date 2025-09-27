@@ -5,6 +5,7 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { WalletConnection } from '@/components/WalletConnection';
+import { MiniKitDebugger } from '@/components/WalletConnection/MiniKitDebugger';
 import { useWalletConnection } from '@/lib/hooks/useWalletConnection';
 import { useWalletBalance } from '@/lib/hooks/useWalletBalance';
 import { useMockMode } from '@/lib/hooks/useMockMode';
@@ -215,6 +216,11 @@ export function DepositWorkflow({ onComplete, onBack }: DepositWorkflowProps) {
                     <span>Loading your balance...</span>
                   </div>
                 </div>
+              )}
+
+              {/* MiniKit Debugger for development */}
+              {process.env.NODE_ENV === 'development' && !isMockMode && walletError && (
+                <MiniKitDebugger className="mb-4" />
               )}
             </div>
 

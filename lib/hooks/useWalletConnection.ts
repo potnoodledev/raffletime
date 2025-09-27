@@ -72,7 +72,7 @@ export function useWalletConnection(options: UseWalletConnectionOptions = {}): U
     localStorage.removeItem(STORAGE_KEY);
   }, []);
 
-  // Check MiniKit availability
+  // Check MiniKit availability and installation
   const checkMiniKitAvailability = useCallback(async () => {
     if (isMockMode) {
       return true;
@@ -80,8 +80,34 @@ export function useWalletConnection(options: UseWalletConnectionOptions = {}): U
 
     try {
       const MiniKit = await getMiniKit();
-      return MiniKit?.isInstalled() || false;
+
+      // Check if MiniKit is installed
+      if (!MiniKit?.isInstalled()) {
+        // Try to install MiniKit
+        if (typeof MiniKit?.install === 'function') {
+          MiniKit.install();
+
+          // Wait a bit for installation to complete
+          await new Promise(resolve => setTimeout(resolve, 500));
+
+          // Check again
+          if (!MiniKit.isInstalled()) {
+            return false;
+          }
+        } else {
+          return false;
+        }
+      }
+
+      // Verify walletAuth command is available
+      if (!MiniKit.commandsAsync?.walletAuth) {
+        console.warn('MiniKit walletAuth command not available');
+        return false;
+      }
+
+      return true;
     } catch (error) {
+      console.error('MiniKit availability check failed:', error);
       return false;
     }
   }, [isMockMode]);
@@ -100,7 +126,7 @@ export function useWalletConnection(options: UseWalletConnectionOptions = {}): U
       // Check MiniKit availability
       const isAvailable = await checkMiniKitAvailability();
       if (!isAvailable) {
-        throw new Error('MINIKIT_NOT_INSTALLED');
+        throw new Error('MINIKIT_NOT_AVAILABLE');
       }
 
       if (isMockMode) {
@@ -172,11 +198,14 @@ export function useWalletConnection(options: UseWalletConnectionOptions = {}): U
 
       let walletError: WalletError;
 
-      if (err.message === 'MINIKIT_NOT_INSTALLED') {
+      if (err.message === 'MINIKIT_NOT_AVAILABLE' || err.message === 'MINIKIT_NOT_INSTALLED') {
         walletError = {
           code: 'MINIKIT_NOT_INSTALLED',
-          message: 'World App is required to connect your wallet',
-          details: { helpUrl: 'https://worldcoin.org/download' },
+          message: 'World App is required and MiniKit must be properly installed. Please make sure you\'re using the World App.',
+          details: {
+            helpUrl: 'https://worldcoin.org/download',
+            installRequired: true
+          },
         };
       } else if (err.message.includes('denied') || err.message.includes('cancelled')) {
         walletError = {

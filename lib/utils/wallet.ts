@@ -240,3 +240,140 @@ export async function copyToClipboard(text: string): Promise<boolean> {
     return false;
   }
 }
+
+/**
+ * Checks if MiniKit is properly installed and commands are available
+ */
+export const checkMiniKitCommands = async (): Promise<{
+  isInstalled: boolean;
+  hasWalletAuth: boolean;
+  hasPay: boolean;
+  hasVerify: boolean;
+  errors: string[];
+}> => {
+  const errors: string[] = [];
+
+  try {
+    // Check if we're in browser environment
+    if (typeof window === 'undefined') {
+      errors.push('Not in browser environment');
+      return {
+        isInstalled: false,
+        hasWalletAuth: false,
+        hasPay: false,
+        hasVerify: false,
+        errors
+      };
+    }
+
+    // Check if MiniKit is available on window
+    const MiniKit = (window as any).MiniKit;
+
+    if (!MiniKit) {
+      errors.push('MiniKit not found on window object');
+      return {
+        isInstalled: false,
+        hasWalletAuth: false,
+        hasPay: false,
+        hasVerify: false,
+        errors
+      };
+    }
+
+    // Check if MiniKit is installed
+    const isInstalled = typeof MiniKit.isInstalled === 'function' && MiniKit.isInstalled();
+
+    if (!isInstalled) {
+      errors.push('MiniKit.isInstalled() returned false');
+
+      // Try to install if possible
+      if (typeof MiniKit.install === 'function') {
+        try {
+          MiniKit.install();
+          // Wait for installation
+          await new Promise(resolve => setTimeout(resolve, 1000));
+
+          if (MiniKit.isInstalled()) {
+            errors.pop(); // Remove the error since we fixed it
+          } else {
+            errors.push('MiniKit.install() did not complete successfully');
+          }
+        } catch (installError) {
+          errors.push(`Failed to install MiniKit: ${installError}`);
+        }
+      } else {
+        errors.push('MiniKit.install() method not available');
+      }
+    }
+
+    // Check for command availability
+    const hasWalletAuth = !!(MiniKit.commandsAsync && typeof MiniKit.commandsAsync.walletAuth === 'function');
+    const hasPay = !!(MiniKit.commandsAsync && typeof MiniKit.commandsAsync.pay === 'function');
+    const hasVerify = !!(MiniKit.commandsAsync && typeof MiniKit.commandsAsync.verify === 'function');
+
+    if (!hasWalletAuth) {
+      errors.push('walletAuth command not available');
+    }
+    if (!hasPay) {
+      errors.push('pay command not available');
+    }
+    if (!hasVerify) {
+      errors.push('verify command not available');
+    }
+
+    return {
+      isInstalled: MiniKit.isInstalled(),
+      hasWalletAuth,
+      hasPay,
+      hasVerify,
+      errors
+    };
+
+  } catch (error) {
+    errors.push(`Error checking MiniKit: ${error}`);
+    return {
+      isInstalled: false,
+      hasWalletAuth: false,
+      hasPay: false,
+      hasVerify: false,
+      errors
+    };
+  }
+};
+
+/**
+ * Debug helper for MiniKit troubleshooting
+ */
+export const debugMiniKit = (): void => {
+  console.group('🔍 MiniKit Debug Information');
+
+  try {
+    const MiniKit = (window as any).MiniKit;
+
+    console.log('Window MiniKit:', MiniKit);
+    console.log('Is function isInstalled:', typeof MiniKit?.isInstalled);
+    console.log('Is installed:', MiniKit?.isInstalled());
+    console.log('Commands object:', MiniKit?.commandsAsync);
+    console.log('User object:', MiniKit?.user);
+
+    if (MiniKit?.commandsAsync) {
+      console.log('Available commands:', Object.keys(MiniKit.commandsAsync));
+      console.log('walletAuth available:', typeof MiniKit.commandsAsync.walletAuth);
+      console.log('pay available:', typeof MiniKit.commandsAsync.pay);
+      console.log('verify available:', typeof MiniKit.commandsAsync.verify);
+    }
+
+    // Check environment
+    console.log('User Agent:', navigator.userAgent);
+    console.log('Is World App:', navigator.userAgent.includes('Worldcoin'));
+    console.log('Environment:', {
+      isMockMode: process.env.NEXT_PUBLIC_MOCK_MODE,
+      appLaunched: process.env.NEXT_PUBLIC_APP_LAUNCHED
+    });
+
+  } catch (error) {
+    console.error('Error during debug:', error);
+  }
+
+  console.groupEnd();
+};
