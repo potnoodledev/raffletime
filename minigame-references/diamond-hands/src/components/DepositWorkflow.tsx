@@ -38,7 +38,7 @@ export function DepositWorkflow({ onComplete, onBack }: DepositWorkflowProps) {
   const progressValue = (currentStep / 3) * 100;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col p-6">
+    <div className="min-h-screen bg-[#f5f5dc] flex flex-col p-6">
       {/* Header with progress */}
       <div className="w-full max-w-md mx-auto mb-8">
         <div className="flex items-center justify-between mb-4">
@@ -50,13 +50,13 @@ export function DepositWorkflow({ onComplete, onBack }: DepositWorkflowProps) {
         <Progress value={progressValue} className="w-full" />
       </div>
 
-      <div className="flex-1 flex items-center justify-center">
+      <div className="flex-1 flex items-start justify-center pt-8 lg:pt-16">
         <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
           {currentStep === 1 && (
             <div className="text-center">
-              <h2 className="text-2xl mb-6">Sign in to Diamond Hands</h2>
+              <h2 className="text-4xl mb-6" style={{ fontFamily: "'Aubrey', cursive" }}>Sign in to Diamond Hands</h2>
               <p className="text-gray-600 mb-4">
-                Sign in to confirm wallet ownership and authenticate to Diamond Hands.
+                Confirm wallet ownership and authenticate to Diamond Hands.
               </p>
               <p className="text-gray-600 mb-6">
                 This app will see:
@@ -87,7 +87,7 @@ export function DepositWorkflow({ onComplete, onBack }: DepositWorkflowProps) {
 
           {currentStep === 2 && (
             <div className="text-center">
-              <h2 className="text-2xl mb-6">Deposit WLD</h2>
+              <h2 className="text-4xl mb-6" style={{ fontFamily: "'Aubrey', cursive" }}>Deposit WLD</h2>
               <p className="text-gray-600 mb-8">
                 Enter the amount of WLD tokens you want to deposit to start playing.
               </p>
@@ -121,7 +121,7 @@ export function DepositWorkflow({ onComplete, onBack }: DepositWorkflowProps) {
 
           {currentStep === 3 && (
             <div className="text-center">
-              <h2 className="text-2xl mb-6">Ready to Play!</h2>
+              <h2 className="text-4xl mb-6" style={{ fontFamily: "'Aubrey', cursive" }}>Ready to Play!</h2>
               <div className="mb-8 p-6 bg-yellow-50 border border-yellow-200 rounded-lg">
                 <p className="text-gray-800 mb-2">
                   <strong>Remember!</strong>

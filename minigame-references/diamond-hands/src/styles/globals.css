@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Aubrey&family=Bangers&display=swap');
+
 @custom-variant dark (&:is(.dark *));
 
 :root {
@@ -8,9 +10,9 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: #dc2626;
+  --primary: #c82618;
   --primary-foreground: #ffffff;
-  --secondary: #2563eb;
+  --secondary: #005164;
   --secondary-foreground: #ffffff;
   --muted: #ececf0;
   --muted-foreground: #717182;
@@ -48,10 +50,10 @@
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.145 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.985 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
+  --primary: #c82618;
+  --primary-foreground: #ffffff;
+  --secondary: #005164;
+  --secondary-foreground: #ffffff;
   --muted: oklch(0.269 0 0);
   --muted-foreground: oklch(0.708 0 0);
   --accent: oklch(0.269 0 0);
@@ -135,24 +137,28 @@
 @layer base {
   :where(:not(:has([class*=" text-"]), :not(:has([class^="text-"])))) {
     h1 {
+      font-family: 'Aubrey', cursive;
       font-size: var(--text-2xl);
       font-weight: var(--font-weight-medium);
       line-height: 1.5;
     }
 
     h2 {
+      font-family: 'Aubrey', cursive;
       font-size: var(--text-xl);
       font-weight: var(--font-weight-medium);
       line-height: 1.5;
     }
 
     h3 {
+      font-family: 'Aubrey', cursive;
       font-size: var(--text-lg);
       font-weight: var(--font-weight-medium);
       line-height: 1.5;
     }
 
     h4 {
+      font-family: 'Aubrey', cursive;
       font-size: var(--text-base);
       font-weight: var(--font-weight-medium);
       line-height: 1.5;
@@ -186,4 +192,47 @@
 
 html {
   font-size: var(--font-size);
+}
+
+/* Sparkle animations */
+@keyframes sparkle1 {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+@keyframes sparkle2 {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0.6) rotate(0deg);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.1) rotate(180deg);
+  }
+}
+
+/* Custom button hover styles */
+.btn-hover-secondary:hover {
+  background-color: var(--secondary) !important;
+  color: var(--secondary-foreground) !important;
+}
+
+/* Apply hover effect to ghost and outline buttons */
+button[data-variant="ghost"]:hover,
+button[data-variant="outline"]:hover,
+.btn-ghost:hover,
+.btn-outline:hover {
+  background-color: var(--secondary) !important;
+  color: var(--secondary-foreground) !important;
+}
+
+/* Special case for skip tutorial button - ensure black text on hover */
+.text-white.hover\:text-gray-200:hover {
+  color: #000000 !important;
 }

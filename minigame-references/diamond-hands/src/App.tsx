@@ -3,8 +3,9 @@ import { Tutorial } from './components/Tutorial';
 import { HomeScreen } from './components/HomeScreen';
 import { DepositWorkflow } from './components/DepositWorkflow';
 import { GameScreen } from './components/GameScreen';
+import { HelpScreen } from './components/HelpScreen';
 
-type AppScreen = 'tutorial' | 'home' | 'deposit' | 'game';
+type AppScreen = 'tutorial' | 'home' | 'deposit' | 'game' | 'help';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<AppScreen>('tutorial');
@@ -20,6 +21,10 @@ export default function App() {
 
   const handleShowTutorial = () => {
     setCurrentScreen('tutorial');
+  };
+
+  const handleShowHelp = () => {
+    setCurrentScreen('help');
   };
 
   const handleDepositComplete = (amount: number) => {
@@ -50,6 +55,7 @@ export default function App() {
         <HomeScreen 
           onStartDeposit={handleStartDeposit}
           onShowTutorial={handleShowTutorial}
+          onShowHelp={handleShowHelp}
         />
       )}
       
@@ -65,7 +71,12 @@ export default function App() {
           originalDeposit={depositAmount}
           onGameEnd={handleGameEnd}
           onPlayAgain={handlePlayAgain}
+          onBackToHome={handleBackToHome}
         />
+      )}
+      
+      {currentScreen === 'help' && (
+        <HelpScreen onBack={handleBackToHome} />
       )}
     </div>
   );
