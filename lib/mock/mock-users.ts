@@ -83,7 +83,7 @@ export const mockUserProfiles: Record<MockPersona, MockUser> = {
 export function getMockWallet(user: MockUser): MockWallet {
   const balances: Record<MockPersona, string> = {
     'new-user': '0',
-    'active-user': '100',
+    'active-user': '500',
     'power-user': '1000',
     'vip-user': '10000',
     'problem-user': '0.01'
@@ -199,7 +199,7 @@ export const personaCharacteristics = {
     testingFocus: 'onboarding flows, first-time user experience'
   },
   'active-user': {
-    balance: 100,
+    balance: 500,
     verificationStatus: 'verified',
     activityLevel: 'moderate',
     transactionHistory: 'some transactions',

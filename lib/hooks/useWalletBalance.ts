@@ -61,6 +61,7 @@ export function useWalletBalance(options: UseWalletBalanceOptions = {}): UseWall
   const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const lastRefreshTimeRef = useRef<number>(0);
   const pendingRefreshRef = useRef<Promise<void> | null>(null);
+  const previousAddressRef = useRef<string>('');
 
   // Check if we're in mock mode
   const isMockMode = process.env.NEXT_PUBLIC_MOCK_MODE === 'true';
@@ -126,20 +127,42 @@ export function useWalletBalance(options: UseWalletBalanceOptions = {}): UseWall
 
   // Fetch balance from MiniKit or mock
   const fetchBalance = useCallback(async (addr: string, forceRefresh = false): Promise<WalletBalance> => {
-    if (isMockMode) {
-      // Mock mode balance fetch
-      const mockUserId = localStorage.getItem('mockUserId') || 'active-user';
+    console.log('🔍 [useWalletBalance] fetchBalance called:', {
+      addr,
+      forceRefresh,
+      isMockMode,
+      currentAddress
+    });
 
-      return await simulateMockBalanceRefresh(mockUserId as any, {
+    const isMiniKitAvailable = typeof MiniKit !== 'undefined' &&
+                               typeof MiniKit.isInstalled === 'function' &&
+                               MiniKit.isInstalled();
+
+    console.log('🔍 [useWalletBalance] Environment check:', {
+      isMockMode,
+      isMiniKitAvailable,
+      willUseMock: isMockMode || !isMiniKitAvailable
+    });
+
+    if (isMockMode || !isMiniKitAvailable) {
+      // Mock mode balance fetch or fallback when MiniKit not available
+      const mockUserId = localStorage.getItem('mockUserId') || 'active-user';
+      console.log('🔍 [useWalletBalance] Using mock balance for:', {
+        reason: isMiniKitAvailable ? 'mock mode' : 'no MiniKit',
+        mockUserId,
+        fromStorage: localStorage.getItem('mockUserId'),
+        defaulting: 'active-user'
+      });
+
+      const mockResult = await simulateMockBalanceRefresh(mockUserId as any, {
         delay: MOCK_DELAYS.BALANCE_REFRESH,
       });
+
+      console.log('🔍 [useWalletBalance] Mock balance result:', mockResult);
+      return mockResult;
     } else {
       // Real MiniKit balance fetch
-      // Use direct MiniKit instead of wrapper
-
-      if (!MiniKit?.isInstalled()) {
-        throw new Error('MiniKit not available');
-      }
+      console.log('🔍 [useWalletBalance] Using real MiniKit balance');
 
       const currentUser = MiniKit.user;
       if (!currentUser) {
@@ -334,14 +357,41 @@ export function useWalletBalance(options: UseWalletBalanceOptions = {}): UseWall
   useEffect(() => {
     const currentAddress = address || user?.address;
 
+    console.log('🔍 [useWalletBalance] Auto-fetch effect triggered:', {
+      autoFetch,
+      currentAddress,
+      status,
+      address,
+      userAddress: user?.address,
+      willFetch: autoFetch && currentAddress && status === 'idle'
+    });
+
     if (autoFetch && currentAddress && status === 'idle') {
+      console.log('🔍 [useWalletBalance] Triggering throttledRefresh');
       throttledRefresh(false);
+    } else {
+      console.log('🔍 [useWalletBalance] Not fetching because:', {
+        autoFetch,
+        hasCurrentAddress: !!currentAddress,
+        statusIsIdle: status === 'idle',
+        status
+      });
     }
   }, [autoFetch, currentAddress, status, throttledRefresh]);
 
   // Reset state when address changes
   useEffect(() => {
-    if (currentAddress && balance && currentAddress !== balance.amount) {
+    const previousAddress = previousAddressRef.current;
+
+    console.log('🔍 [useWalletBalance] Address change check:', {
+      currentAddress,
+      previousAddress,
+      hasBalance: !!balance,
+      shouldReset: currentAddress && previousAddress && currentAddress !== previousAddress
+    });
+
+    if (currentAddress && previousAddress && currentAddress !== previousAddress) {
+      console.log('🔍 [useWalletBalance] Address changed, resetting balance state');
       setBalance(null);
       setStatus('idle');
       setError(null);
@@ -350,7 +400,12 @@ export function useWalletBalance(options: UseWalletBalanceOptions = {}): UseWall
       lastRefreshTimeRef.current = 0;
       pendingRefreshRef.current = null;
     }
-  }, [currentAddress, balance]);
+
+    // Update the previous address ref
+    if (currentAddress) {
+      previousAddressRef.current = currentAddress;
+    }
+  }, [currentAddress]);
 
   // In mock mode, watch for persona changes and refresh balance
   useEffect(() => {

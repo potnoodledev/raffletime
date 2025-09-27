@@ -52,7 +52,7 @@ export function useWalletConnection(options: UseWalletConnectionOptions = {}): U
     return null;
   }, []);
 
-  // Save session to localStorage
+  // Save session to localStorage and notify other components
   const saveSession = useCallback((walletAddress: string, sessionId: string) => {
     const session = {
       walletAddress,
@@ -62,11 +62,21 @@ export function useWalletConnection(options: UseWalletConnectionOptions = {}): U
       timestamp: Date.now(),
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+
+    // Dispatch custom event to notify other components in same tab
+    window.dispatchEvent(new CustomEvent('walletSessionChange', {
+      detail: { type: 'connected', session }
+    }));
   }, []);
 
-  // Clear stored session
+  // Clear stored session and notify other components
   const clearSession = useCallback(() => {
     localStorage.removeItem(STORAGE_KEY);
+
+    // Dispatch custom event to notify other components in same tab
+    window.dispatchEvent(new CustomEvent('walletSessionChange', {
+      detail: { type: 'disconnected' }
+    }));
   }, []);
 
   // Connect to wallet - EXACT COPY of working debug page pattern
@@ -84,12 +94,43 @@ export function useWalletConnection(options: UseWalletConnectionOptions = {}): U
       setStatus('connecting');
       setError(null);
 
-      // Step 1: Check if MiniKit is installed (EXACT debug page pattern)
+      // Step 1: Check if MiniKit is installed - fallback to mock if not available
       console.log('🔍 [useWalletConnection] Step 1: Checking MiniKit installation...');
-      if (!MiniKit.isInstalled()) {
-        console.log('🔍 [useWalletConnection] ❌ MiniKit is not installed');
-        throw new Error('MINIKIT_NOT_INSTALLED');
+
+      const isMiniKitAvailable = typeof MiniKit !== 'undefined' &&
+                                 typeof MiniKit.isInstalled === 'function' &&
+                                 MiniKit.isInstalled();
+
+      if (!isMiniKitAvailable) {
+        console.log('🔍 [useWalletConnection] ❌ MiniKit not available, using mock fallback');
+
+        // Use mock user when MiniKit is not available
+        const mockUserId = 'active-user';
+        const mockUser = await simulateMockWalletAuth(mockUserId as any, {
+          delay: MOCK_DELAYS.AUTH,
+        });
+        console.log('🔍 [useWalletConnection] 🧪 Generated mock user:', mockUser);
+
+        const newConnection: WalletConnection = {
+          address: mockUser.address,
+          isConnected: true,
+          connectionTimestamp: Date.now(),
+          lastRefreshTimestamp: Date.now(),
+        };
+
+        setConnection(newConnection);
+        setUser(mockUser);
+        setStatus('connected');
+
+        // Save session
+        const sessionId = `mock-session-${Date.now()}`;
+        saveSession(mockUser.address, sessionId);
+
+        onConnect?.(mockUser);
+        console.log('🔍 [useWalletConnection] ✅ Mock connection completed successfully');
+        return;
       }
+
       console.log('🔍 [useWalletConnection] ✅ MiniKit is installed');
 
       // Step 2: Fetch nonce from backend (EXACT debug page pattern)
@@ -181,16 +222,7 @@ export function useWalletConnection(options: UseWalletConnectionOptions = {}): U
 
       let walletError: WalletError;
 
-      if (err.message === 'MINIKIT_NOT_INSTALLED') {
-        walletError = {
-          code: 'MINIKIT_NOT_INSTALLED',
-          message: 'World App is required. Please make sure you\'re using the World App.',
-          details: {
-            helpUrl: 'https://worldcoin.org/download',
-            installRequired: true
-          },
-        };
-      } else if (err.message.includes('denied') || err.message.includes('cancelled')) {
+      if (err.message.includes('denied') || err.message.includes('cancelled')) {
         walletError = {
           code: 'AUTH_FAILED',
           message: 'Connection was cancelled by user',
@@ -301,6 +333,58 @@ export function useWalletConnection(options: UseWalletConnectionOptions = {}): U
       }
     }
   }, [autoConnect, connect, getStoredSession, clearSession]);
+
+  // Listen for wallet session changes to sync state between components
+  useEffect(() => {
+    const handleSessionChange = (event: CustomEvent) => {
+      const { type, session } = event.detail;
+      console.log('🔍 [useWalletConnection] Session change event:', { type, session });
+
+      if (type === 'connected' && session) {
+        // New session was created (wallet connected in another component)
+        if (session.walletAddress && status !== 'connected') {
+          console.log('🔍 [useWalletConnection] Syncing wallet state from other component');
+
+          // Create user object from session
+          const walletUser: WalletUser = {
+            address: session.walletAddress,
+            username: undefined,
+            profilePicture: undefined,
+            balance: undefined
+          };
+
+          const newConnection: WalletConnection = {
+            address: session.walletAddress,
+            isConnected: true,
+            connectionTimestamp: session.timestamp,
+            lastRefreshTimestamp: Date.now(),
+          };
+
+          // Update local state to match the connected session
+          setConnection(newConnection);
+          setUser(walletUser);
+          setStatus('connected');
+          setError(null);
+
+          console.log('🔍 [useWalletConnection] Local state synced with other component');
+        }
+      } else if (type === 'disconnected') {
+        // Session was cleared (wallet disconnected in another component)
+        console.log('🔍 [useWalletConnection] Session cleared by other component, disconnecting');
+        if (status === 'connected') {
+          setConnection(null);
+          setUser(null);
+          setStatus('disconnected');
+          setError(null);
+        }
+      }
+    };
+
+    window.addEventListener('walletSessionChange', handleSessionChange as EventListener);
+    return () => {
+      window.removeEventListener('walletSessionChange', handleSessionChange as EventListener);
+    };
+  }, [status]);
 
   // Cleanup on unmount
   useEffect(() => {

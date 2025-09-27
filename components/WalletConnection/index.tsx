@@ -114,6 +114,23 @@ export const WalletConnection = ({
     refreshInterval: showBalance ? 60000 : undefined, // Refresh every minute if showing balance
   });
 
+  // Debug balance state in WalletConnection component
+  console.log('🔍 [WalletConnection] Balance debug:', {
+    showBalance,
+    isConnected,
+    user: user ? { address: user.address, username: user.username } : null,
+    balance: balance ? {
+      amount: balance.amount,
+      formatted: balance.formatted,
+      isLoading: balance.isLoading,
+      error: balance.error
+    } : 'BALANCE_NULL',
+    balanceLoading,
+    balanceStatus,
+    balanceError,
+    autoFetch: isConnected && showBalance
+  });
+
   // Session management
   const { session, isSessionValid } = useWalletSession();
 
@@ -389,15 +406,36 @@ export const WalletConnection = ({
           </div>
 
           {/* Balance Display */}
-          {showBalance && (
-            <BalanceDisplay
-              balance={balance}
-              isLoading={balanceLoading}
-              error={balanceError}
-              onRefresh={refreshBalance}
-              showRefreshButton={true}
-            />
-          )}
+          {(() => {
+            console.log('🔍 [WalletConnection] BalanceDisplay render check:', {
+              showBalance,
+              shouldRender: showBalance,
+              balance: balance ? 'HAS_BALANCE' : 'NO_BALANCE',
+              balanceAmount: balance?.amount,
+              balanceLoading
+            });
+
+            if (!showBalance) {
+              console.log('🔍 [WalletConnection] Not showing balance because showBalance =', showBalance);
+              return null;
+            }
+
+            console.log('🔍 [WalletConnection] Rendering BalanceDisplay with:', {
+              balance,
+              isLoading: balanceLoading,
+              error: balanceError
+            });
+
+            return (
+              <BalanceDisplay
+                balance={balance}
+                isLoading={balanceLoading}
+                error={balanceError}
+                onRefresh={refreshBalance}
+                showRefreshButton={true}
+              />
+            );
+          })()}
 
           {/* Action Buttons */}
           <div className="flex space-x-2" role="group" aria-label="Wallet actions">

@@ -9,7 +9,7 @@ export const MOCK_WALLET_CONFIGS = {
     description: 'New user with no balance',
   },
   'active-user': {
-    balance: 100,
+    balance: 500,
     canPay: true,
     canReceive: true,
     description: 'Standard user with moderate balance',
