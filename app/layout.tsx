@@ -44,6 +44,7 @@ export default function RootLayout({
               <MockModeProvider>
                 <MiniKitProvider>
                   {children}
+                  <DebugButton />
                 </MiniKitProvider>
               </MockModeProvider>
             </LaunchModeProvider>

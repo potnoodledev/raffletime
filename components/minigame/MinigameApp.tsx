@@ -72,8 +72,8 @@ export function MinigameApp() {
   return (
     <ErrorBoundary>
       <div className="size-full min-h-screen">
-        {/* Global wallet status header for connected state */}
-        {isConnected && currentScreen !== 'tutorial' && (
+        {/* Global wallet status header for connected state - HIDDEN */}
+        {/* {isConnected && currentScreen !== 'tutorial' && (
           <WalletStatusHeader
             position="top-right"
             showBalance={true}
@@ -85,7 +85,7 @@ export function MinigameApp() {
               }
             }}
           />
-        )}
+        )} */}
 
         {currentScreen === 'tutorial' && (
           <Tutorial onComplete={handleTutorialComplete} />
