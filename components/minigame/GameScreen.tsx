@@ -195,12 +195,12 @@ export function GameScreen({ originalDeposit, onGameEnd, onPlayAgain }: GameScre
       <div className="w-full px-4 pt-4 pb-2">
         <div className="w-full max-w-sm mx-auto space-y-2">
           <div className="bg-white rounded-full px-4 py-2 shadow-lg text-center">
-            <div className="text-xs text-gray-600 mb-1">CURRENT</div>
-            <div className="text-lg" data-testid="current-price">{currentPrice.toFixed(4)} WLD</div>
+            <div className="text-xs text-black mb-1">CURRENT</div>
+            <div className="text-lg text-black" data-testid="current-price">{currentPrice.toFixed(4)} WLD</div>
           </div>
           <div className="bg-gray-100 rounded-full px-4 py-2 text-center">
-            <div className="text-xs text-gray-600 mb-1">ORIGINAL</div>
-            <div className="text-lg">{originalDeposit.toFixed(4)} WLD</div>
+            <div className="text-xs text-black mb-1">ORIGINAL</div>
+            <div className="text-lg text-black">{originalDeposit.toFixed(4)} WLD</div>
           </div>
         </div>
       </div>
@@ -260,15 +260,15 @@ export function GameScreen({ originalDeposit, onGameEnd, onPlayAgain }: GameScre
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="fixed bottom-4 left-1/2 transform -translate-x-1/2 text-center z-40"
+            className="fixed bottom-4 left-1/2 transform -translate-x-1/2 text-center z-40 flex flex-col items-center"
           >
             <div
               className="bg-white rounded-lg px-3 py-2 shadow-lg mb-3 cursor-pointer hover:bg-gray-50 transition-colors"
               onClick={handleTap}
             >
-              <span className="text-base">Tap to Hold!</span>
+              <span className="text-base text-black">Tap to Hold!</span>
             </div>
-            <div data-testid="countdown-circle">
+            <div data-testid="countdown-circle" className="flex justify-center">
               <CircularCountdown
                 duration={GAME_CONSTANTS.COUNTDOWN_DURATION}
                 onComplete={handleCountdownComplete}
