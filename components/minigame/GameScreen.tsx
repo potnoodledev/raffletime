@@ -127,7 +127,7 @@ export function GameScreen({ originalDeposit, onGameEnd, onPlayAgain }: GameScre
                 </div>
               </motion.div>
             )}
-            <h2 className="text-8xl mb-4 text-gray-800" style={{ fontFamily: 'Aubrey, cursive' }}>SOLD!</h2>
+            <h2 className="text-8xl mb-4 text-gray-800" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>SOLD!</h2>
             <p className="text-xl text-gray-800 mb-4">
               You sold your diamond for:
             </p>
@@ -212,7 +212,7 @@ export function GameScreen({ originalDeposit, onGameEnd, onPlayAgain }: GameScre
       </div>
 
       {/* Diamond area - optimized for mobile viewport */}
-      <div className="flex-1 flex flex-col items-center justify-center relative px-4 min-h-0" style={{ marginTop: '-100px' }}>
+      <div className="flex-1 flex flex-col items-center justify-center relative px-4 min-h-0" style={{ marginTop: '-140px' }}>
         <motion.div
           className="relative cursor-pointer flex-shrink-0"
           onClick={handleTap}

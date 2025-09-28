@@ -25,7 +25,7 @@ export function HomeScreen({ onStartDeposit, onShowTutorial, onShowHelp }: HomeS
             style={{ width: '416px', maxWidth: '90vw' }}
           />
         </div>
-        <p className="text-black text-2xl sm:text-3xl mb-1 max-w-2xl italic px-4" style={{ fontFamily: "'Aubrey', cursive" }}>
+        <p className="text-black text-2xl sm:text-3xl mb-1 max-w-2xl italic px-4" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
           How long can you hold on to your diamond?
         </p>
       </div>

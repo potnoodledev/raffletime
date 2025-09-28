@@ -28,7 +28,7 @@ export function HelpScreen({ onBack }: HelpScreenProps) {
             ← Back
           </Button>
         </div>
-        <h1 className="text-5xl text-center text-white mb-4" style={{ fontFamily: 'Aubrey, cursive' }}>
+        <h1 className="text-5xl text-center text-white mb-4" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
           Help Center
         </h1>
       </div>

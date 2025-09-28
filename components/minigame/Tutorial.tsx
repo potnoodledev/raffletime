@@ -64,7 +64,7 @@ export const Tutorial = memo(function Tutorial({ onComplete }: TutorialProps) {
         </div>
 
         <div className="text-center mb-8">
-          <h2 className="text-3xl mb-4 text-black" style={{ fontFamily: 'Aubrey, cursive' }}>
+          <h2 className="text-3xl mb-4 text-black" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
             {tutorialSteps[currentStep].title}
           </h2>
           <p className="text-gray-600 text-lg leading-relaxed">
