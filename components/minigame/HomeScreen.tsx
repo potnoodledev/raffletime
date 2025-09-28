@@ -16,8 +16,8 @@ export function HomeScreen({ onStartDeposit, onShowTutorial, onShowHelp }: HomeS
       }}
     >
       {/* Top section with title and caption */}
-      <div className="text-center pt-8 pb-8">
-        <div className="mb-4">
+      <div className="text-center pt-8 pb-4">
+        <div className="mb-2">
           <img
             src="/minigame-assets/title.png"
             alt="Diamond Hands"
@@ -32,7 +32,7 @@ export function HomeScreen({ onStartDeposit, onShowTutorial, onShowHelp }: HomeS
 
       {/* Center diamond section - this will take up the remaining space and center the diamond */}
       <div className="flex-1 flex items-center justify-center">
-        <div className="relative w-64 h-64" style={{ marginTop: '-120px' }}>
+        <div className="relative w-64 h-64" style={{ marginTop: '-80px' }}>
           {/* Sparkle animations - positioned very close to and on top of diamond */}
           <div className="absolute inset-0 pointer-events-none">
             {/* Sparkles directly on top of diamond */}
