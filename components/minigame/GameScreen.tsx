@@ -260,21 +260,23 @@ export function GameScreen({ originalDeposit, onGameEnd, onPlayAgain }: GameScre
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="fixed bottom-4 left-1/2 transform -translate-x-1/2 text-center z-40 flex flex-col items-center"
+            className="fixed bottom-4 left-0 right-0 z-40"
           >
-            <div
-              className="bg-white rounded-lg px-3 py-2 shadow-lg mb-3 cursor-pointer hover:bg-gray-50 transition-colors"
-              onClick={handleTap}
-            >
-              <span className="text-base text-black">Tap to Hold!</span>
-            </div>
-            <div data-testid="countdown-circle" className="flex justify-center">
-              <CircularCountdown
-                duration={GAME_CONSTANTS.COUNTDOWN_DURATION}
-                onComplete={handleCountdownComplete}
-                isActive={isCountingDown}
-                resetKey={countdownKey.toString()}
-              />
+            <div className="flex flex-col items-center justify-center w-full">
+              <div
+                className="bg-white rounded-lg px-3 py-2 shadow-lg mb-3 cursor-pointer hover:bg-gray-50 transition-colors"
+                onClick={handleTap}
+              >
+                <span className="text-base text-black">Tap to Hold!</span>
+              </div>
+              <div data-testid="countdown-circle" className="flex justify-center">
+                <CircularCountdown
+                  duration={GAME_CONSTANTS.COUNTDOWN_DURATION}
+                  onComplete={handleCountdownComplete}
+                  isActive={isCountingDown}
+                  resetKey={countdownKey.toString()}
+                />
+              </div>
             </div>
           </motion.div>
         )}
