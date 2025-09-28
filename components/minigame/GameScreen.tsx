@@ -112,14 +112,20 @@ export function GameScreen({ originalDeposit, onGameEnd, onPlayAgain }: GameScre
             className="mb-8"
           >
             {soldAboveDeposit && (
-              <motion.img
-                src="/minigame-assets/diamond-frame-1.png"
-                alt="Victory"
-                className="w-32 h-32 mx-auto mb-6"
+              <motion.div
+                className="w-32 h-32 mx-auto mb-6 rounded-xl overflow-hidden bg-gradient-to-br from-[#edaa38] to-[#d4941f] p-1"
                 initial={{ scale: 0, rotate: -180 }}
                 animate={{ scale: 1, rotate: 0 }}
                 transition={{ delay: 0.3, duration: 0.6, type: "spring" }}
-              />
+              >
+                <div className="w-full h-full rounded-lg overflow-hidden">
+                  <img
+                    src="/minigame-assets/background-2.png"
+                    alt="Victory"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </motion.div>
             )}
             <h2 className="text-8xl mb-4 text-gray-800" style={{ fontFamily: 'Aubrey, cursive' }}>SOLD!</h2>
             <p className="text-xl text-gray-800 mb-4">
