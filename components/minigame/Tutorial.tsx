@@ -98,10 +98,6 @@ export const Tutorial = memo(function Tutorial({ onComplete }: TutorialProps) {
             Back
           </Button>
 
-          <span className="text-sm text-gray-500">
-            {currentStep + 1} of {tutorialSteps.length}
-          </span>
-
           <Button
             onClick={nextStep}
             className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white"
